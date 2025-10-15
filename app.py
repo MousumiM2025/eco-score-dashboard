@@ -16,12 +16,18 @@ st.markdown("Understand the **real impact** of everyday products — from ingred
 product = st.text_input("🔍 Enter a product name:", "Dove Shampoo")
 
 if st.button("Get EcoScore"):
-    api_url = f"https://your-api-url/get_score?product_name={product}"
-    with st.spinner("Fetching and analyzing data..."):
-        response = requests.get(api_url)
-    
-    if response.status_code == 200:
-        data = response.json()
+    with st.spinner("Simulating EcoScore analysis..."):
+        # Mock dataset (for demo only)
+        mock_data = {
+            "product": product,
+            "brand": "Example Brand",
+            "ecoscore": 82,
+            "health_score": 76,
+            "carbon_score": 68,
+            "epa_safer_choice": True,
+            "ewg_health_ref": 85.0
+        }
+        data = mock_data
         if "error" in data:
             st.error(data["error"])
         else:
@@ -71,3 +77,4 @@ if st.button("Get EcoScore"):
             """)
     else:
         st.error("⚠️ API connection failed. Please try again later.")
+
