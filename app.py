@@ -12,28 +12,48 @@ st.set_page_config(
 st.title("🌿 EcoScore — Product Environmental & Health Transparency")
 st.markdown("Understand the **real impact** of everyday products — from ingredients to packaging and certifications.")
 
-# --- User Input ---
-st.markdown("### 🔍 Enter or choose a product name:")
+# --- Mock product database ---
+sample_products = {
+    "Dove Shampoo": {"brand": "Dove", "ecoscore": 78, "health_score": 72, "carbon_score": 65, "epa_safer_choice": False, "ewg_health_ref": 80.0},
+    "Pantene Shampoo": {"brand": "Pantene", "ecoscore": 70, "health_score": 68, "carbon_score": 62, "epa_safer_choice": False, "ewg_health_ref": 75.0},
+    "Herbal Essences": {"brand": "Herbal Essences", "ecoscore": 84, "health_score": 80, "carbon_score": 72, "epa_safer_choice": True, "ewg_health_ref": 88.0},
+    "Head & Shoulders": {"brand": "Head & Shoulders", "ecoscore": 66, "health_score": 60, "carbon_score": 58, "epa_safer_choice": False, "ewg_health_ref": 70.0},
+    "Aveeno Daily Moisturizer": {"brand": "Aveeno", "ecoscore": 90, "health_score": 85, "carbon_score": 80, "epa_safer_choice": True, "ewg_health_ref": 92.0},
+    "Native Shampoo": {"brand": "Native", "ecoscore": 88, "health_score": 90, "carbon_score": 78, "epa_safer_choice": True, "ewg_health_ref": 95.0},
+    "Suave Essentials": {"brand": "Suave", "ecoscore": 62, "health_score": 55, "carbon_score": 60, "epa_safer_choice": False, "ewg_health_ref": 68.0},
+    "The Body Shop Ginger Shampoo": {"brand": "The Body Shop", "ecoscore": 92, "health_score": 88, "carbon_score": 84, "epa_safer_choice": True, "ewg_health_ref": 93.0},
+    "L’Oréal Elvive": {"brand": "L’Oréal", "ecoscore": 74, "health_score": 70, "carbon_score": 66, "epa_safer_choice": False, "ewg_health_ref": 78.0},
+    "SheaMoisture Coconut & Hibiscus": {"brand": "SheaMoisture", "ecoscore": 89, "health_score": 92, "carbon_score": 82, "epa_safer_choice": True, "ewg_health_ref": 96.0}
+}
+
+# --- Product Input ---
+st.markdown("### 🔍 Choose a sample product or type your own:")
 product = st.selectbox(
-    "Select a product (or type your own):",
-    ["Dove Shampoo", "Pantene Shampoo", "Herbal Essences", "Head & Shoulders", "Aveeno Daily Moisturizer"],
+    "Select a product:",
+    list(sample_products.keys()) + ["Other (type manually)"],
     index=0
 )
 
+if product == "Other (type manually)":
+    product = st.text_input("Enter your product name:", "")
+
 # --- Button to Generate Score ---
 if st.button("Get EcoScore"):
-    with st.spinner("Simulating EcoScore analysis..."):
-        # Mock dataset (for demo only)
-        mock_data = {
-            "product": product,
-            "brand": "Example Brand",
-            "ecoscore": 82,
-            "health_score": 76,
-            "carbon_score": 68,
-            "epa_safer_choice": True,
-            "ewg_health_ref": 85.0
-        }
-        data = mock_data
+    with st.spinner("Analyzing product sustainability data..."):
+        if product in sample_products:
+            data = sample_products[product]
+            data["product"] = product
+        else:
+            # Default mock values for custom products
+            data = {
+                "product": product or "Custom Product",
+                "brand": "Unknown Brand",
+                "ecoscore": 75,
+                "health_score": 70,
+                "carbon_score": 65,
+                "epa_safer_choice": False,
+                "ewg_health_ref": 78.0
+            }
 
     # --- Display Results ---
     st.subheader(f"🧴 {data['product']}")
@@ -86,8 +106,7 @@ if st.button("Get EcoScore"):
     """)
 
 else:
-    st.info("👆 Enter or select a product above and click **Get EcoScore** to see results.")
-
+    st.info("👆 Choose a product above and click **Get EcoScore** to see results.")
 
 
 
