@@ -64,8 +64,7 @@ if st.button("Get EcoScore"):
 
     st.markdown("---")
 
-
-            with st.expander("🔍 How EcoScore is Calculated"):
+           with st.expander("🔍 How EcoScore is Calculated"):
                 st.markdown("""
                 **EcoScore (0–100)** combines environmental, health, and lifecycle factors:
 
@@ -95,5 +94,6 @@ if st.button("Get EcoScore"):
             """)
     else:
         st.error("⚠️ API connection failed. Please try again later.")
+
 
 
