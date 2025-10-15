@@ -222,7 +222,7 @@ if st.button("Get EcoScore"):
         height=550
     )
     st.plotly_chart(fig2, use_container_width=True)
-    st.caption("↗️ Top-right corner = high EcoScore + low cost = best eco-value.")
+    st.caption("↗️ Top-left corner = high EcoScore + low cost = best eco-value.")
 
     # --- Explanation ---
     with st.expander("🔍 How EcoScore is Calculated"):
@@ -247,3 +247,4 @@ if st.button("Get EcoScore"):
 
 else:
     st.info("👆 Select products and click **Get EcoScore** to compare.")
+
