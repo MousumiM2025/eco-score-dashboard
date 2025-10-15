@@ -1,10 +1,14 @@
 import streamlit as st
 import requests
 
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
 # --- Page Config ---
 st.set_page_config(
     page_title="EcoScore Dashboard",
-    page_icon="🌎",
+    page_icon="🌿",
     layout="centered",
 )
 
@@ -26,51 +30,74 @@ sample_products = {
     "SheaMoisture Coconut & Hibiscus": {"brand": "SheaMoisture", "ecoscore": 89, "health_score": 92, "carbon_score": 82, "epa_safer_choice": True, "ewg_health_ref": 96.0}
 }
 
-# --- Product Input ---
-st.markdown("### 🔍 Choose a sample product or type your own:")
-product = st.selectbox(
-    "Select a product:",
-    list(sample_products.keys()) + ["Other (type manually)"],
-    index=0
+# --- Product Selection ---
+st.markdown("### 🔍 Choose one or more products to compare:")
+selected_products = st.multiselect(
+    "Select products:",
+    list(sample_products.keys()),
+    default=["Dove Shampoo"]
 )
 
-if product == "Other (type manually)":
-    product = st.text_input("Enter your product name:", "")
+# --- Manual entry for custom product ---
+manual_product = st.text_input("Or enter a custom product name (optional):", "")
 
-# --- Button to Generate Score ---
 if st.button("Get EcoScore"):
-    with st.spinner("Analyzing product sustainability data..."):
-        if product in sample_products:
+    with st.spinner("Analyzing sustainability data..."):
+        results = []
+
+        for product in selected_products:
             data = sample_products[product]
             data["product"] = product
-        else:
-            # Default mock values for custom products
-            data = {
-                "product": product or "Custom Product",
-                "brand": "Unknown Brand",
+            results.append(data)
+
+        if manual_product:
+            results.append({
+                "product": manual_product,
+                "brand": "Unknown",
                 "ecoscore": 75,
                 "health_score": 70,
                 "carbon_score": 65,
                 "epa_safer_choice": False,
                 "ewg_health_ref": 78.0
-            }
+            })
 
-    # --- Display Results ---
-    st.subheader(f"🧴 {data['product']}")
-    st.write(f"**Brand:** {data['brand']}")
+        df = pd.DataFrame(results)
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("🌱 EcoScore", f"{data['ecoscore']}/100")
-    col2.metric("❤️ Health Score", f"{data['health_score']}/100")
-    col3.metric("⚡ Carbon Impact", f"{data['carbon_score']}/100")
+    # --- Display Individual Scores ---
+    st.subheader("🧴 Product Details")
+    for _, row in df.iterrows():
+        st.markdown(f"#### {row['product']}")
+        st.write(f"**Brand:** {row['brand']}")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("🌱 EcoScore", f"{row['ecoscore']}/100")
+        col2.metric("❤️ Health Score", f"{row['health_score']}/100")
+        col3.metric("⚡ Carbon Impact", f"{row['carbon_score']}/100")
+        if row["epa_safer_choice"]:
+            st.success("✅ EPA Safer Choice Certified")
+        st.markdown("---")
 
-    if data.get("epa_safer_choice"):
-        st.success("✅ Certified by EPA Safer Choice")
+    # --- Comparison Chart ---
+    st.subheader("📊 Compare Scores Across Products")
+    chart_df = df.melt(id_vars=["product"], value_vars=["ecoscore", "health_score", "carbon_score"],
+                       var_name="Score Type", value_name="Value")
 
-    if data.get("ewg_health_ref"):
-        st.info(f"EWG Adjusted Health Rating: {data['ewg_health_ref']:.1f}/100")
-
-    st.markdown("---")
+    fig = px.bar(
+        chart_df,
+        x="product",
+        y="Value",
+        color="Score Type",
+        barmode="group",
+        text="Value",
+        color_discrete_sequence=px.colors.qualitative.Set2
+    )
+    fig.update_layout(
+        xaxis_title="Product",
+        yaxis_title="Score (0–100)",
+        title="EcoScore, Health Score, and Carbon Impact Comparison",
+        title_x=0.5,
+        height=500
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
     # --- Explanation ---
     with st.expander("🔍 How EcoScore is Calculated"):
@@ -83,31 +110,17 @@ if st.button("Get EcoScore"):
         | 💧 **Carbon Intensity** | 30% | Based on product category lifecycle emission factors |
         | 🌱 **Ingredient Safety** | 40% | Derived from EWG hazard ratings (lower hazard = higher score) |
         | 🏅 **Certifications** | 10% | Bonus points for EPA Safer Choice, EcoLabel, or organic certification |
-
-        **Formula:**
-        ```
-        EcoScore = (0.4 × Health) + (0.3 × Carbon) + (0.2 × Packaging) + (0.1 × CertificationBonus)
-        ```
         """)
 
-    st.markdown("---")
-
     # --- Data Sources ---
-    st.markdown("### 📚 Data Sources & References")
+    st.markdown("### 📚 Data Sources")
     st.markdown("""
-    This analysis combines publicly available environmental and health data:
-    - [Open Beauty Facts](https://world.openbeautyfacts.org/) — cosmetics & personal care composition  
-    - [Open Food Facts](https://world.openfoodfacts.org/) — food & beverage sustainability scores  
-    - [EWG Skin Deep](https://www.ewg.org/skindeep/) — ingredient health hazard ratings  
-    - [EPA Safer Choice](https://www.epa.gov/saferchoice/products) — verified low-toxicity products  
-
-    ---
-    *This dashboard is for transparency and education only. Scores are estimated using open datasets.*
+    - [Open Beauty Facts](https://world.openbeautyfacts.org/)  
+    - [EWG Skin Deep](https://www.ewg.org/skindeep/)  
+    - [EPA Safer Choice](https://www.epa.gov/saferchoice/products)
     """)
 
 else:
-    st.info("👆 Choose a product above and click **Get EcoScore** to see results.")
-
-
+    st.info("👆 Select products and click **Get EcoScore** to compare.")
 
 
