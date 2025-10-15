@@ -1,6 +1,17 @@
+# Core packages for Streamlit app
 streamlit
 requests
-plotly
+
+# Optional but recommended for data handling & visualization
 pandas
 numpy
+plotly
+
+# If you later connect your API backend (FastAPI)
+fastapi
+uvicorn
+
+# For deployment compatibility
+gunicorn
+
 
