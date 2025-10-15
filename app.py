@@ -1,250 +1,96 @@
-#import requests
 import streamlit as st
+import requests
 import pandas as pd
-import plotly.express as px
 
-# --- Page Config ---
-st.set_page_config(
-    page_title="EcoScore Dashboard",
-    page_icon="🌿",
-    layout="centered",
-)
+st.set_page_config(page_title="EcoScore Live", page_icon="🌿")
 
-# --- Header ---
-st.title("🌿 EcoScore — Product Environmental & Health Transparency")
-st.markdown("Understand the **real impact** of everyday products — from ingredients to packaging and certifications.")
+st.title("🌿 EcoScore Live Product Dashboard")
+st.markdown("Compare sustainability, price, and health of products in real-time.")
 
-# --- Mock product database ---
-sample_products = {
-    "Dove Shampoo": {
-        "brand": "Dove",
-        "ecoscore": 78,
-        "health_score": 72,
-        "carbon_score": 65,
-        "price_usd": 6.49,
-        "ingredients": ["Water", "Sodium Laureth Sulfate", "Cocamidopropyl Betaine", "Fragrance"],
-        "packaging": "Plastic bottle (HDPE, recyclable)",
-        "epa_safer_choice": False,
-        "ewg_health_ref": 80.0
-    },
-    "Pantene Shampoo": {
-        "brand": "Pantene",
-        "ecoscore": 70,
-        "health_score": 68,
-        "carbon_score": 62,
-        "price_usd": 5.99,
-        "ingredients": ["Water", "Sodium Lauryl Sulfate", "Dimethicone", "Fragrance"],
-        "packaging": "Plastic bottle (PET, partially recyclable)",
-        "epa_safer_choice": False,
-        "ewg_health_ref": 75.0
-    },
-    "Herbal Essences": {
-        "brand": "Herbal Essences",
-        "ecoscore": 84,
-        "health_score": 80,
-        "carbon_score": 72,
-        "price_usd": 7.49,
-        "ingredients": ["Aloe", "Coconut Extract", "Citric Acid", "Fragrance"],
-        "packaging": "Recycled plastic bottle (25% PCR)",
-        "epa_safer_choice": True,
-        "ewg_health_ref": 88.0
-    },
-    "Head & Shoulders": {
-        "brand": "Head & Shoulders",
-        "ecoscore": 66,
-        "health_score": 60,
-        "carbon_score": 58,
-        "price_usd": 6.99,
-        "ingredients": ["Pyrithione Zinc", "Sodium Lauryl Sulfate", "Fragrance"],
-        "packaging": "Plastic bottle (HDPE, recyclable)",
-        "epa_safer_choice": False,
-        "ewg_health_ref": 70.0
-    },
-    "Aveeno Daily Moisturizer": {
-        "brand": "Aveeno",
-        "ecoscore": 90,
-        "health_score": 85,
-        "carbon_score": 80,
-        "price_usd": 8.99,
-        "ingredients": ["Oatmeal Extract", "Glycerin", "Dimethicone", "Water"],
-        "packaging": "Plastic tube (HDPE, partially recyclable)",
-        "epa_safer_choice": True,
-        "ewg_health_ref": 92.0
-    },
-    "Native Shampoo": {
-        "brand": "Native",
-        "ecoscore": 88,
-        "health_score": 90,
-        "carbon_score": 78,
-        "price_usd": 9.99,
-        "ingredients": ["Coconut Oil", "Cleansing Salt", "Coconut Water", "Fragrance (natural)"],
-        "packaging": "Recycled aluminum bottle (fully recyclable)",
-        "epa_safer_choice": True,
-        "ewg_health_ref": 95.0
-    },
-    "Suave Essentials": {
-        "brand": "Suave",
-        "ecoscore": 62,
-        "health_score": 55,
-        "carbon_score": 60,
-        "price_usd": 3.99,
-        "ingredients": ["Water", "Sodium Laureth Sulfate", "Fragrance", "Citric Acid"],
-        "packaging": "Plastic bottle (PET, recyclable)",
-        "epa_safer_choice": False,
-        "ewg_health_ref": 68.0
-    },
-    "The Body Shop Ginger Shampoo": {
-        "brand": "The Body Shop",
-        "ecoscore": 92,
-        "health_score": 88,
-        "carbon_score": 84,
-        "price_usd": 12.00,
-        "ingredients": ["Ginger Root Extract", "Aloe Vera", "Panthenol"],
-        "packaging": "Recycled plastic bottle (100% PCR)",
-        "epa_safer_choice": True,
-        "ewg_health_ref": 93.0
-    },
-    "L’Oréal Elvive": {
-        "brand": "L’Oréal",
-        "ecoscore": 74,
-        "health_score": 70,
-        "carbon_score": 66,
-        "price_usd": 6.79,
-        "ingredients": ["Water", "Cocamidopropyl Betaine", "Dimethicone", "Fragrance"],
-        "packaging": "Plastic bottle (PET, partially recyclable)",
-        "epa_safer_choice": False,
-        "ewg_health_ref": 78.0
-    },
-    "SheaMoisture Coconut & Hibiscus": {
-        "brand": "SheaMoisture",
-        "ecoscore": 89,
-        "health_score": 92,
-        "carbon_score": 82,
-        "price_usd": 11.49,
-        "ingredients": ["Coconut Oil", "Hibiscus Flower Extract", "Shea Butter", "Aloe Vera"],
-        "packaging": "Plastic jar (HDPE, recyclable)",
-        "epa_safer_choice": True,
-        "ewg_health_ref": 96.0
-    }
-}
+# --- User Input ---
+query = st.text_input("🔍 Search for a product (e.g., Shampoo, Moisturizer):")
 
-# --- Product Selection ---
-st.markdown("### 🔍 Choose one or more products to compare:")
-selected_products = st.multiselect(
-    "Select products:",
-    list(sample_products.keys()),
-    default=["Dove Shampoo"]
-)
+# --- Walmart API key ---
+API_KEY = st.secrets.get("WALMART_API_KEY", "YOUR_WALMART_API_KEY_HERE")
 
-manual_product = st.text_input("Or enter a custom product name (optional):", "")
+# --- Load EPA dataset ---
+@st.cache_data
+def load_epa_data():
+    url = "https://www.epa.gov/sites/default/files/2020-09/saferchoice-certified-products.csv"
+    return pd.read_csv(url)
 
-if st.button("Get EcoScore"):
-    with st.spinner("Analyzing sustainability data..."):
-        results = []
-        for product in selected_products:
-            data = sample_products[product]
-            data["product"] = product
-            results.append(data)
+epa_df = load_epa_data()
 
-        if manual_product:
-            results.append({
-                "product": manual_product,
-                "brand": "Unknown",
-                "ecoscore": 75,
-                "health_score": 70,
-                "carbon_score": 65,
-                "price_usd": 7.00,
-                "ingredients": ["N/A"],
-                "packaging": "Unknown",
-                "epa_safer_choice": False,
-                "ewg_health_ref": 78.0
-            })
+# --- Get Walmart products ---
+def search_walmart_products(query):
+    url = f"https://api.walmart.com/v3/search?query={query}&format=json&apiKey={API_KEY}"
+    resp = requests.get(url)
+    if resp.status_code == 200:
+        data = resp.json()
+        items = data.get("items", [])
+        return [
+            {
+                "name": i.get("name", ""),
+                "brand": i.get("brandName", ""),
+                "price": i.get("salePrice", "N/A"),
+                "image": i.get("mediumImage", ""),
+                "url": i.get("productUrl", "")
+            }
+            for i in items[:10]
+        ]
+    else:
+        st.error("Error fetching data from Walmart API.")
+        return []
 
-        df = pd.DataFrame(results)
+# --- Search Button ---
+if st.button("Search Products"):
+    with st.spinner("Fetching products..."):
+        products = search_walmart_products(query)
 
-    # --- Individual Details ---
-    st.subheader("🧴 Product Details")
-    for _, row in df.iterrows():
-        st.markdown(f"#### {row['product']}")
-        st.write(f"**Brand:** {row['brand']}")
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("🌱 EcoScore", f"{row['ecoscore']}/100")
-        col2.metric("❤️ Health", f"{row['health_score']}/100")
-        col3.metric("⚡ Carbon", f"{row['carbon_score']}/100")
-        col4.metric("💲 Price", f"${row['price_usd']}")
-        st.write(f"**Main Ingredients:** {', '.join(row['ingredients'])}")
-        st.write(f"**Packaging:** {row['packaging']}")
-        if row["epa_safer_choice"]:
+    if products:
+        product_names = [p["name"] for p in products]
+        selected = st.selectbox("Select a product to analyze:", product_names)
+
+        product = next(p for p in products if p["name"] == selected)
+        st.image(product["image"], width=200)
+        st.markdown(f"**[{product['name']}]({product['url']})**")
+        st.write(f"💰 **Price:** ${product['price']}")
+        st.write(f"🏷️ **Brand:** {product['brand']}")
+
+        # --- Open Beauty Facts API ---
+        search_url = f"https://world.openbeautyfacts.org/cgi/search.pl?search_terms={product['brand']} {selected}&json=1&page_size=1"
+        resp = requests.get(search_url)
+
+        ecoscore, packaging, ingredients = "N/A", "N/A", "N/A"
+        if resp.status_code == 200:
+            data = resp.json()
+            if data["count"] > 0:
+                prod = data["products"][0]
+                ecoscore = prod.get("ecoscore_grade", "N/A")
+                packaging = prod.get("packaging_text", "N/A")
+                ingredients = prod.get("ingredients_text", "N/A")
+
+        # --- EPA Certification ---
+        certified = epa_df[epa_df["Product or Brand Name"].str.contains(product["brand"], case=False, na=False)]
+        is_certified = not certified.empty
+
+        # --- Carbon Estimate ---
+        carbon_intensity = 1.8 if "shampoo" in selected.lower() else 2.2
+
+        # --- Display Sustainability ---
+        st.subheader("🌿 Sustainability Summary")
+        st.write(f"**EcoScore:** {ecoscore.upper() if ecoscore != 'N/A' else ecoscore}")
+        st.write(f"**Estimated Carbon Intensity:** {carbon_intensity} kg CO₂e per bottle")
+        st.write(f"**Packaging:** {packaging}")
+        st.write(f"**Ingredients:** {ingredients}")
+
+        if is_certified:
             st.success("✅ EPA Safer Choice Certified")
+        else:
+            st.info("❌ Not EPA Certified")
+
         st.markdown("---")
+        st.caption("Sources: Walmart API, Open Beauty Facts, EPA Safer Choice, estimated lifecycle data.")
 
-    # --- Comparison Chart ---
-    st.subheader("📊 Compare Scores and Prices")
-    chart_df = df.melt(id_vars=["product"], value_vars=["ecoscore", "health_score", "carbon_score", "price_usd"],
-                       var_name="Metric", value_name="Value")
-
-    fig = px.bar(
-        chart_df,
-        x="product",
-        y="Value",
-        color="Metric",
-        barmode="group",
-        text="Value",
-        color_discrete_sequence=px.colors.qualitative.Set2
-    )
-    fig.update_layout(
-        xaxis_title="Product",
-        yaxis_title="Score / Price (USD)",
-        title="EcoScore, Health, Carbon, and Price Comparison",
-        title_x=0.5,
-        height=550
-    )
-    st.plotly_chart(fig, use_container_width=True)
-
-    # --- NEW Cost vs EcoScore Scatter Plot ---
-    st.subheader("💲 Cost vs 🌱 EcoScore")
-    fig2 = px.scatter(
-        df,
-        x="price_usd",
-        y="ecoscore",
-        color="brand",
-        text="product",
-        size="health_score",
-        hover_name="product",
-        color_discrete_sequence=px.colors.qualitative.Bold
-    )
-    fig2.update_traces(textposition='top center')
-    fig2.update_layout(
-        xaxis_title="Price (USD)",
-        yaxis_title="EcoScore (0–100)",
-        title="Eco Efficiency: Sustainability per Dollar",
-        title_x=0.5,
-        height=550
-    )
-    st.plotly_chart(fig2, use_container_width=True)
-    st.caption("↗️ Top-left corner = high EcoScore + low cost = best eco-value.")
-
-    # --- Explanation ---
-    with st.expander("🔍 How EcoScore is Calculated"):
-        st.markdown("""
-        **EcoScore (0–100)** combines environmental, health, and lifecycle factors:
-
-        | Factor | Weight | Description |
-        |---------|--------|-------------|
-        | ♻️ **Packaging** | 20% | Recyclable paper/glass rated higher; plastics penalized |
-        | 💧 **Carbon Intensity** | 30% | Based on lifecycle emission factors |
-        | 🌱 **Ingredient Safety** | 40% | Derived from EWG hazard ratings |
-        | 🏅 **Certifications** | 10% | Bonus for EPA Safer Choice, EcoLabel, or organic |
-        """)
-
-    # --- Data Sources ---
-    st.markdown("### 📚 Data Sources")
-    st.markdown("""
-    - [Open Beauty Facts](https://world.openbeautyfacts.org/)  
-    - [EWG Skin Deep](https://www.ewg.org/skindeep/)  
-    - [EPA Safer Choice](https://www.epa.gov/saferchoice/products)
-    """)
-
-else:
-    st.info("👆 Select products and click **Get EcoScore** to compare.")
-
+    else:
+        st.warning("No products found. Try a different search keyword.")
