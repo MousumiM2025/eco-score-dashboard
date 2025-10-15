@@ -18,7 +18,7 @@ product = st.text_input("🔍 Enter a product name:", "Dove Shampoo")
 if st.button("Get EcoScore"):
     with st.spinner("Simulating EcoScore analysis..."):
         # Mock dataset (for demo only)
-        mock_data = {
+        data = {
             "product": product,
             "brand": "Example Brand",
             "ecoscore": 82,
@@ -27,25 +27,43 @@ if st.button("Get EcoScore"):
             "epa_safer_choice": True,
             "ewg_health_ref": 85.0
         }
-        data = mock_data
-        if "error" in data:
-            st.error(data["error"])
-        else:
-            st.subheader(f"🧴 {data['product']}")
-            st.write(f"**Brand:** {data['brand']}")
 
-            col1, col2, col3 = st.columns(3)
-            col1.metric("🌱 EcoScore", f"{data['ecoscore']}/100")
-            col2.metric("❤️ Health Score", f"{data['health_score']}/100")
-            col3.metric("⚡ Carbon Impact", f"{data['carbon_score']}/100")
+    # Display Results
+    st.subheader(f"🧴 {data['product']}")
+    st.write(f"**Brand:** {data['brand']}")
 
-            if data.get("epa_safer_choice"):
-                st.success("✅ Certified by EPA Safer Choice")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("🌱 EcoScore", f"{data['ecoscore']}/100")
+    col2.metric("❤️ Health Score", f"{data['health_score']}/100")
+    col3.metric("⚡ Carbon Impact", f"{data['carbon_score']}/100")
 
-            if data.get("ewg_health_ref"):
-                st.info(f"EWG Adjusted Health Rating: {data['ewg_health_ref']:.1f}/100")
+    if data.get("epa_safer_choice"):
+        st.success("✅ Certified by EPA Safer Choice")
 
-            st.markdown("---")
+    if data.get("ewg_health_ref"):
+        st.info(f"EWG Adjusted Health Rating: {data['ewg_health_ref']:.1f}/100")
+
+    st.markdown("---")
+
+    with st.expander("🔍 How EcoScore is Calculated"):
+        st.markdown("""
+        **EcoScore (0–100)** combines environmental, health, and lifecycle factors:
+
+        | Factor | Weight | Description |
+        |---------|--------|-------------|
+        | ♻️ **Packaging** | 20% | Recyclable paper/glass rated higher; plastics penalized |
+        | 💧 **Carbon Intensity** | 30% | Based on product category lifecycle emission factors |
+        | 🌱 **Ingredient Safety** | 40% | Derived from EWG hazard ratings (lower hazard = higher score) |
+        | 🏅 **Certifications** | 10% | Bonus points for EPA Safer Choice, EcoLabel, or organic certification |
+
+        **Formula:**
+        ```
+        EcoScore = (0.4 × Health) + (0.3 × Carbon) + (0.2 × Packaging) + (0.1 × CertificationBonus)
+        ```
+        """)
+
+    st.markdown("---")
+
 
             with st.expander("🔍 How EcoScore is Calculated"):
                 st.markdown("""
@@ -77,4 +95,5 @@ if st.button("Get EcoScore"):
             """)
     else:
         st.error("⚠️ API connection failed. Please try again later.")
+
 
