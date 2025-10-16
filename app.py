@@ -269,9 +269,9 @@ lowest_carbon = display_df.loc[display_df["Carbon (gCO₂e)"].idxmin()]
 best_value = display_df.loc[(display_df["EcoScore"] / display_df["Price (USD)"]).idxmax()]
 
 col_a, col_b, col_c = st.columns(3)
-col_a.markdown(f"<div style='font-size:13px; color:#065f46; font-weight:600;'>Best EcoScore</div><div class='quick-insight-small'>{best_overall['Product Name']} ({best_overall['EcoScore']}/100)</div>", unsafe_allow_html=True)
-col_b.markdown(f"<div style='font-size:13px; color:#065f46; font-weight:600;'>Lowest Carbon</div><div class='quick-insight-small'>{lowest_carbon['Product Name']} ({lowest_carbon['Carbon (gCO₂e)']:.1f} gCO₂e)</div>", unsafe_allow_html=True)
-col_c.markdown(f"<div style='font-size:13px; color:#065f46; font-weight:600;'>Best EcoScore per $</div><div class='quick-insight-small'>{best_value['Product Name']} (EcoScore/${best_value['Price (USD)']:.2f})</div>", unsafe_allow_html=True)
+col_a.markdown(f"<div style='font-size:15px; color:#065f46; font-weight:600;'>Best EcoScore</div><div class='quick-insight-small'>{best_overall['Product Name']} ({best_overall['EcoScore']}/100)</div>", unsafe_allow_html=True)
+col_b.markdown(f"<div style='font-size:15px; color:#065f46; font-weight:600;'>Lowest Carbon</div><div class='quick-insight-small'>{lowest_carbon['Product Name']} ({lowest_carbon['Carbon (gCO₂e)']:.1f} gCO₂e)</div>", unsafe_allow_html=True)
+col_c.markdown(f"<div style='font-size:15px; color:#065f46; font-weight:600;'>Best EcoScore per $</div><div class='quick-insight-small'>{best_value['Product Name']} (EcoScore/${best_value['Price (USD)']:.2f})</div>", unsafe_allow_html=True)
 
 # -----------------------
 # Footer: visitor count, GA note, copyright
@@ -291,4 +291,5 @@ st.markdown(f"<div class='footer'>{footer_text}</div>", unsafe_allow_html=True)
 
 # timestamp
 st.caption(f"Dataset baseline: 2023 • Generated: {datetime.datetime.utcnow().date().isoformat()}")
+
 
