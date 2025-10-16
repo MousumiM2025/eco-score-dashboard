@@ -1,26 +1,51 @@
-Category,Product,Brand,Price_USD,EcoScore,Carbon_Intensity_gCO2eq,Main_Ingredients,Packaging_Type
-Shampoo,Herbal Essence BioRenew,Herbal Essence,7.99,82,120,"Aloe Vera, Coconut, Sulfate-Free",Recycled Plastic Bottle
-Shampoo,Head & Shoulders Classic,P&G,6.49,65,220,"Pyrithione Zinc, Fragrance",Plastic Bottle
-Shampoo,Dove Nutritive Solutions,Unilever,8.29,75,180,"Keratin, Argan Oil",Recycled Bottle
-Shampoo,Pantene Pro-V Smooth,P&G,7.59,68,190,"Vitamin B5, Fragrance",Plastic Bottle
-Shampoo,Love Beauty & Planet,Unilever,9.99,90,100,"Coconut Oil, Ylang Ylang",100% Recycled Bottle
-Lotion,Aveeno Daily Moisturizing,J&J,9.49,78,150,"Oat Extract, Glycerin",Plastic Pump
-Lotion,Nivea Smooth Daily,Beiersdorf,8.99,72,170,"Shea Butter, Glycerin",Plastic Bottle
-Lotion,CeraVe Moisturizing Cream,L'Oréal,11.99,88,130,"Ceramides, Hyaluronic Acid",Recyclable Tube
-Lotion,Jergens Ultra Healing,Kao,7.99,70,200,"Vitamin C, E, B5",Plastic Bottle
-Lotion,The Body Shop Shea Butter,Natura & Co,14.99,92,95,Shea Butter,Aluminum Tin
-Detergent,Tide Original Liquid,P&G,12.99,60,300,"Surfactants, Enzymes",Plastic Bottle
-Detergent,Seventh Generation Free & Clear,Unilever,13.49,88,140,Plant-Based Enzymes,Recycled Plastic
-Detergent,Gain Liquid Detergent,P&G,11.99,65,270,"Fragrance, Surfactants",Plastic Bottle
-Detergent,Persil ProClean,Henkel,14.49,70,250,"Enzymes, Surfactants",Plastic Bottle
-Detergent,Method Concentrated,SC Johnson,12.49,90,130,Plant-Based Enzymes,Recycled Plastic
-Sunscreen,Neutrogena Ultra Sheer,J&J,9.99,72,180,"Avobenzone, Octocrylene",Plastic Tube
-Sunscreen,Banana Boat Sport,Edgewell,8.99,65,200,"Homosalate, Octinoxate",Plastic Bottle
-Sunscreen,Blue Lizard Sensitive,Crown Labs,12.99,88,110,"Zinc Oxide, Titanium Dioxide",Recycled Tube
-Sunscreen,Supergoop Unseen,Supergoop,17.99,92,90,"Avobenzone, Antioxidants",Recycled Tube
-Sunscreen,Hawaiian Tropic Sheer Touch,Edgewell,9.49,70,210,"Avobenzone, Fragrance",Plastic Bottle
-Toothpaste,Colgate Total,Colgate-Palmolive,4.99,68,190,"Fluoride, Silica",Plastic Tube
-Toothpaste,Crest 3D White,P&G,5.29,70,200,"Fluoride, Whitening Silica",Plastic Tube
-Toothpaste,Tom’s of Maine,Colgate-Palmolive,6.99,90,100,"Calcium Carbonate, Mint",Recycled Tube
-Toothpaste,Sensodyne Pronamel,GSK,7.49,80,150,"Fluoride, Potassium Nitrate",Plastic Tube
-Toothpaste,Hello Activated Charcoal,Colgate-Palmolive,7.99,85,120,"Charcoal, Coconut Oil",Recycled Tube
+Category,Brand,Product,Price_USD,EcoScore,Carbon_Intensity_gCO2eq,Packaging_Type,Main_Ingredients
+Shampoo,Dove,Dove Daily Moisture Shampoo,10.67,56,206.0,Recycled Plastic,"Citric Acid, Cocamidopropyl Betaine, Zinc Oxide, Glycerin, Sodium Fluoride"
+Shampoo,Pantene,Pantene Pro-V Smooth & Sleek,11.89,89,95.0,Cardboard Box,"Water, Vitamin E, Glycerin, Citric Acid, Zinc Oxide"
+Shampoo,Herbal Essences,Herbal Essences Bio:Renew Argan Oil,9.06,56,175.0,Glass Bottle,"Sodium Laureth Sulfate, Citric Acid, Sodium Benzoate, Sorbitol, Fragrance"
+Shampoo,Head & Shoulders,Head & Shoulders Classic Clean,12.71,55,209.0,Recycled Plastic,"Zinc Oxide, Sodium Laureth Sulfate, Dimethicone, Fragrance, Cocamidopropyl Betaine"
+Shampoo,Garnier,Garnier Fructis Sleek & Shine,5.58,76,97.0,Cardboard Box,"Glycerin, Dimethicone, Coconut Oil, Sorbitol, Fragrance"
+Shampoo,OGX,OGX Coconut Milk Shampoo,12.69,84,171.0,Cardboard Box,"Glycerin, Silica, Fragrance, Sodium Fluoride, Sorbitol"
+Shampoo,Aveeno,Aveeno Pure Renewal Shampoo,13.63,78,178.0,Plastic Bottle,"Water, Sodium Fluoride, Citric Acid, Fragrance, Glycerin"
+Shampoo,Tresemmé,Tresemmé Keratin Smooth,13.26,61,145.0,Cardboard Box,"Sodium Fluoride, Coconut Oil, Dimethicone, Cocamidopropyl Betaine, Aloe Vera"
+Shampoo,L'Oréal,L'Oréal Elvive Total Repair 5,7.26,72,199.0,Plastic Bottle,"Sorbitol, Sodium Fluoride, Cocamidopropyl Betaine, Silica, Citric Acid"
+Shampoo,Suave,Suave Essentials Daily Clarifying,4.96,79,126.0,Glass Bottle,"Citric Acid, Sodium Fluoride, Dimethicone, Water, Vitamin E"
+Lotion,Olay,Olay Ultra Moisture Lotion,12.86,75,148.0,Plastic Bottle,"Citric Acid, Sorbitol, Zinc Oxide, Dimethicone, Vitamin E"
+Lotion,Aveeno,Aveeno Daily Moisturizing Lotion,10.87,80,229.99999999999997,Cardboard Box,"Cocamidopropyl Betaine, Fragrance, Vitamin E, Citric Acid, Silica"
+Lotion,Jergens,Jergens Shea Butter Deep Conditioning,9.47,92,153.0,Glass Bottle,"Sodium Laureth Sulfate, Dimethicone, Citric Acid, Cocamidopropyl Betaine, Silica"
+Lotion,Vaseline,Vaseline Intensive Care Aloe Soothe,8.92,58,225.99999999999997,Recycled Plastic,"Sodium Fluoride, Cocamidopropyl Betaine, Aloe Vera, Vitamin E, Sodium Laureth Sulfate"
+Lotion,Cetaphil,Cetaphil Moisturizing Lotion,10.16,79,145.0,Cardboard Box,"Silica, Fragrance, Vitamin E, Water, Sodium Fluoride"
+Lotion,Nivea,Nivea Essentially Enriched Body Lotion,11.65,89,208.0,Tube,"Glycerin, Fragrance, Sodium Laureth Sulfate, Cocamidopropyl Betaine, Sodium Benzoate"
+Lotion,Eucerin,Eucerin Advanced Repair Lotion,3.04,71,245.00000000000003,Recycled Plastic,"Silica, Glycerin, Sodium Fluoride, Fragrance, Aloe Vera"
+Lotion,CeraVe,CeraVe Daily Moisturizing Lotion,9.09,67,106.0,Recycled Plastic,"Silica, Aloe Vera, Vitamin E, Water, Sorbitol"
+Lotion,Lubriderm,Lubriderm Daily Moisture Lotion,6.89,56,99.0,Tube,"Vitamin E, Coconut Oil, Aloe Vera, Fragrance, Citric Acid"
+Lotion,Neutrogena,Neutrogena Hydro Boost Water Gel,3.7,91,241.0,Plastic Bottle,"Zinc Oxide, Sodium Benzoate, Glycerin, Silica, Cocamidopropyl Betaine"
+Detergent,Tide,Tide Original Liquid Laundry Detergent,4.54,85,241.0,Recycled Plastic,"Fragrance, Silica, Sorbitol, Sodium Laureth Sulfate, Citric Acid"
+Detergent,Gain,Gain Original Liquid Detergent,14.15,67,200.99999999999997,Cardboard Box,"Sodium Fluoride, Vitamin E, Dimethicone, Sodium Benzoate, Silica"
+Detergent,Persil,Persil ProClean Stain Fighter,8.42,70,118.0,Tube,"Water, Sorbitol, Silica, Citric Acid, Coconut Oil"
+Detergent,Arm & Hammer,Arm & Hammer Clean Burst,5.64,59,200.0,Plastic Bottle,"Citric Acid, Glycerin, Water, Dimethicone, Coconut Oil"
+Detergent,All,All Free Clear Liquid Detergent,9.17,72,194.0,Recycled Plastic,"Silica, Cocamidopropyl Betaine, Zinc Oxide, Sorbitol, Aloe Vera"
+Detergent,Seventh Generation,Seventh Generation Concentrated Detergent,8.67,85,217.0,Recycled Plastic,"Glycerin, Vitamin E, Sodium Fluoride, Sodium Laureth Sulfate, Dimethicone"
+Detergent,Method,Method Ginger Mango Laundry Detergent,8.08,84,227.0,Plastic Bottle,"Sodium Fluoride, Vitamin E, Coconut Oil, Glycerin, Water"
+Detergent,Mrs. Meyer's,Mrs. Meyer's Lavender Detergent,7.83,76,216.0,Plastic Bottle,"Citric Acid, Vitamin E, Coconut Oil, Silica, Sodium Benzoate"
+Detergent,Kirkland,Kirkland Signature Ultra Clean,4.68,66,127.0,Recycled Plastic,"Coconut Oil, Glycerin, Sodium Benzoate, Silica, Vitamin E"
+Detergent,Purex,Purex Mountain Breeze Detergent,3.61,89,222.00000000000003,Plastic Bottle,"Vitamin E, Aloe Vera, Citric Acid, Cocamidopropyl Betaine, Sodium Laureth Sulfate"
+Sunscreen,Neutrogena,Neutrogena Ultra Sheer Dry-Touch SPF 55,8.83,68,227.0,Plastic Bottle,"Cocamidopropyl Betaine, Sodium Laureth Sulfate, Water, Coconut Oil, Fragrance"
+Sunscreen,Banana Boat,Banana Boat Sport Performance SPF 50,14.12,84,128.0,Glass Bottle,"Sodium Fluoride, Zinc Oxide, Sodium Benzoate, Cocamidopropyl Betaine, Citric Acid"
+Sunscreen,Coppertone,Coppertone Water Babies SPF 50,6.56,58,178.0,Glass Bottle,"Water, Zinc Oxide, Dimethicone, Vitamin E, Coconut Oil"
+Sunscreen,Hawaiian Tropic,Hawaiian Tropic Sheer Touch SPF 30,10.01,87,236.0,Glass Bottle,"Cocamidopropyl Betaine, Water, Silica, Glycerin, Vitamin E"
+Sunscreen,La Roche-Posay,La Roche-Posay Anthelios Melt-in Milk SPF 60,3.82,59,195.0,Recycled Plastic,"Sodium Laureth Sulfate, Glycerin, Sorbitol, Citric Acid, Aloe Vera"
+Sunscreen,Aveeno,Aveeno Protect + Hydrate SPF 60,10.13,60,151.0,Glass Bottle,"Sorbitol, Silica, Dimethicone, Fragrance, Citric Acid"
+Sunscreen,Sun Bum,Sun Bum Original SPF 50,11.04,75,121.0,Cardboard Box,"Cocamidopropyl Betaine, Sodium Fluoride, Coconut Oil, Fragrance, Sodium Benzoate"
+Sunscreen,Blue Lizard,Blue Lizard Sensitive SPF 30,6.79,59,82.0,Glass Bottle,"Sorbitol, Glycerin, Coconut Oil, Silica, Citric Acid"
+Sunscreen,CeraVe,CeraVe Hydrating Mineral Sunscreen SPF 50,9.07,63,239.0,Plastic Bottle,"Vitamin E, Citric Acid, Dimethicone, Fragrance, Cocamidopropyl Betaine"
+Sunscreen,Eucerin,Eucerin Daily Protection SPF 30,8.26,89,200.0,Glass Bottle,"Aloe Vera, Sodium Fluoride, Silica, Water, Coconut Oil"
+Toothpaste,Colgate,Colgate Total Whitening Toothpaste,12.81,74,238.0,Plastic Bottle,"Vitamin E, Cocamidopropyl Betaine, Fragrance, Glycerin, Zinc Oxide"
+Toothpaste,Crest,Crest 3D White Toothpaste,11.91,64,126.0,Glass Bottle,"Citric Acid, Zinc Oxide, Dimethicone, Vitamin E, Sodium Fluoride"
+Toothpaste,Sensodyne,Sensodyne Pronamel Gentle Whitening,10.61,71,166.0,Tube,"Vitamin E, Coconut Oil, Water, Glycerin, Sodium Fluoride"
+Toothpaste,Tom’s of Maine,Tom’s of Maine Fluoride-Free Toothpaste,8.08,72,87.0,Tube,"Aloe Vera, Cocamidopropyl Betaine, Sodium Fluoride, Fragrance, Coconut Oil"
+Toothpaste,Arm & Hammer,Arm & Hammer Advance White,11.89,90,200.0,Glass Bottle,"Water, Glycerin, Coconut Oil, Zinc Oxide, Cocamidopropyl Betaine"
+Toothpaste,Aquafresh,Aquafresh Extreme Clean Whitening,9.55,78,179.0,Recycled Plastic,"Sodium Laureth Sulfate, Cocamidopropyl Betaine, Water, Fragrance, Dimethicone"
+Toothpaste,Pepsodent,Pepsodent Complete Care,13.79,57,233.0,Recycled Plastic,"Sodium Fluoride, Citric Acid, Vitamin E, Glycerin, Dimethicone"
+Toothpaste,Hello,Hello Activated Charcoal Toothpaste,12.36,81,246.0,Recycled Plastic,"Vitamin E, Citric Acid, Cocamidopropyl Betaine, Aloe Vera, Sodium Laureth Sulfate"
+Toothpaste,Biotene,Biotene Fresh Mint Toothpaste,3.3,76,213.0,Cardboard Box,"Aloe Vera, Sodium Fluoride, Zinc Oxide, Citric Acid, Fragrance"
+Toothpaste,Pronamel,Pronamel Daily Protection Toothpaste,4.91,61,145.0,Plastic Bottle,"Coconut Oil, Sodium Benzoate, Citric Acid, Aloe Vera, Vitamin E"
