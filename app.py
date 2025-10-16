@@ -7,7 +7,7 @@ import plotly.express as px
 # -------------------------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("ecoscore_data_2023.csv")
+    df = pd.read_csv("ecosscore_data_2023.csv")  # <-- ensure filename matches your CSV
     return df
 
 df = load_data()
@@ -17,10 +17,10 @@ st.set_page_config(page_title="EcoScore Dashboard", page_icon="🌿", layout="wi
 # -------------------------------
 # App Title
 # -------------------------------
-st.title("🌿 EcoScore Dashboard — Product Sustainability Insights (2023 Baseline)")
+st.title("🌿 EcoScore Dashboard — Sustainable Product Insights (2023 Baseline price)")
 st.markdown("""
 Compare sustainability, carbon intensity, and health impact of everyday consumer products.
-Select a **category** and a **product** to explore details and see how it ranks against others.
+Select a **category** and one or more **products** to explore details and compare their scores.
 """)
 
 # -------------------------------
@@ -31,28 +31,44 @@ selected_category = st.selectbox("Select a Category:", sorted(categories))
 
 filtered_df = df[df["Category"] == selected_category]
 
-products = filtered_df["Product"].unique()
-selected_product = st.selectbox("Select a Product:", sorted(products))
+# Multi-select for product comparison
+selected_products = st.multiselect(
+    "Select one or more Products to Compare:",
+    sorted(filtered_df["Product"].unique()),
+    default=sorted(filtered_df["Product"].unique())[:2]  # preselect first two
+)
 
-product_info = filtered_df[filtered_df["Product"] == selected_product].iloc[0]
+if not selected_products:
+    st.warning("Please select at least one product to compare.")
+    st.stop()
+
+compare_df = filtered_df[filtered_df["Product"].isin(selected_products)]
 
 # -------------------------------
-# Product Information
+# Comparison Table
 # -------------------------------
-st.subheader(f"🔍 {selected_product} — {product_info['Brand']}")
-col1, col2, col3, col4 = st.columns(4)
-
-col1.metric("💲 Price (USD)", f"${product_info['Price_USD']:.2f}")
-col2.metric("🌱 EcoScore", f"{product_info['EcoScore']}/100")
-col3.metric("♻️ Carbon Intensity", f"{product_info['Carbon_Intensity_gCO2eq']} gCO₂e")
-col4.metric("🧴 Packaging", product_info["Packaging_Type"])
-
-st.markdown(f"**Main Ingredients:** {product_info['Main_Ingredients']}")
+st.markdown("### 🧾 Product Comparison Table")
+st.dataframe(
+    compare_df[[
+        "Product", "Brand", "Price_USD", "EcoScore",
+        "Carbon_Intensity_gCO2eq", "Packaging_Type", "Main_Ingredients"
+    ]].rename(columns={
+        "Product": "Product Name",
+        "Brand": "Brand",
+        "Price_USD": "Price (USD)",
+        "EcoScore": "EcoScore",
+        "Carbon_Intensity_gCO2eq": "Carbon Intensity (gCO₂e)",
+        "Packaging_Type": "Packaging",
+        "Main_Ingredients": "Main Ingredients"
+    }),
+    use_container_width=True,
+    hide_index=True
+)
 
 # -------------------------------
 # Scatter Chart — EcoScore vs Price
 # -------------------------------
-st.markdown("### 💬 Category Comparison: EcoScore vs Price (USD)")
+st.markdown("### 📊 EcoScore vs Price (USD)")
 
 fig = px.scatter(
     filtered_df,
@@ -80,8 +96,10 @@ st.markdown("""
 - ♻️ Packaging sustainability (20%)
 - 💰 Price fairness index (10%)
 
-**Data Sources:** EWG Database, Open Beauty Facts, Walmart Product Data (2023 baseline pricing), Company Sustainability Reports.
+**Data Sources:**  
+EWG Database, Open Beauty Facts, Walmart Product Data (2023 baseline price), Company Sustainability Reports.
+
+**Note:** Prices are based on 2023 U.S. retail averages.
 """)
 
 st.caption("Developed by EcoScore.AI — prototype for sustainable consumer transparency.")
-
