@@ -1,0 +1,26 @@
+Category,Product,Brand,Price_USD,EcoScore,Carbon_Intensity_gCO2eq,Main_Ingredients,Packaging_Type
+Shampoo,Herbal Essence BioRenew,Herbal Essence,7.99,82,120,"Aloe Vera, Coconut, Sulfate-Free",Recycled Plastic Bottle
+Shampoo,Head & Shoulders Classic,P&G,6.49,65,220,"Pyrithione Zinc, Fragrance",Plastic Bottle
+Shampoo,Dove Nutritive Solutions,Unilever,8.29,75,180,"Keratin, Argan Oil",Recycled Bottle
+Shampoo,Pantene Pro-V Smooth,P&G,7.59,68,190,"Vitamin B5, Fragrance",Plastic Bottle
+Shampoo,Love Beauty & Planet,Unilever,9.99,90,100,"Coconut Oil, Ylang Ylang",100% Recycled Bottle
+Lotion,Aveeno Daily Moisturizing,J&J,9.49,78,150,"Oat Extract, Glycerin",Plastic Pump
+Lotion,Nivea Smooth Daily,Beiersdorf,8.99,72,170,"Shea Butter, Glycerin",Plastic Bottle
+Lotion,CeraVe Moisturizing Cream,L'Oréal,11.99,88,130,"Ceramides, Hyaluronic Acid",Recyclable Tube
+Lotion,Jergens Ultra Healing,Kao,7.99,70,200,"Vitamin C, E, B5",Plastic Bottle
+Lotion,The Body Shop Shea Butter,Natura & Co,14.99,92,95,Shea Butter,Aluminum Tin
+Detergent,Tide Original Liquid,P&G,12.99,60,300,"Surfactants, Enzymes",Plastic Bottle
+Detergent,Seventh Generation Free & Clear,Unilever,13.49,88,140,Plant-Based Enzymes,Recycled Plastic
+Detergent,Gain Liquid Detergent,P&G,11.99,65,270,"Fragrance, Surfactants",Plastic Bottle
+Detergent,Persil ProClean,Henkel,14.49,70,250,"Enzymes, Surfactants",Plastic Bottle
+Detergent,Method Concentrated,SC Johnson,12.49,90,130,Plant-Based Enzymes,Recycled Plastic
+Sunscreen,Neutrogena Ultra Sheer,J&J,9.99,72,180,"Avobenzone, Octocrylene",Plastic Tube
+Sunscreen,Banana Boat Sport,Edgewell,8.99,65,200,"Homosalate, Octinoxate",Plastic Bottle
+Sunscreen,Blue Lizard Sensitive,Crown Labs,12.99,88,110,"Zinc Oxide, Titanium Dioxide",Recycled Tube
+Sunscreen,Supergoop Unseen,Supergoop,17.99,92,90,"Avobenzone, Antioxidants",Recycled Tube
+Sunscreen,Hawaiian Tropic Sheer Touch,Edgewell,9.49,70,210,"Avobenzone, Fragrance",Plastic Bottle
+Toothpaste,Colgate Total,Colgate-Palmolive,4.99,68,190,"Fluoride, Silica",Plastic Tube
+Toothpaste,Crest 3D White,P&G,5.29,70,200,"Fluoride, Whitening Silica",Plastic Tube
+Toothpaste,Tom’s of Maine,Colgate-Palmolive,6.99,90,100,"Calcium Carbonate, Mint",Recycled Tube
+Toothpaste,Sensodyne Pronamel,GSK,7.49,80,150,"Fluoride, Potassium Nitrate",Plastic Tube
+Toothpaste,Hello Activated Charcoal,Colgate-Palmolive,7.99,85,120,"Charcoal, Coconut Oil",Recycled Tube
