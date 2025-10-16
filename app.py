@@ -1,96 +1,86 @@
 import streamlit as st
-import requests
 import pandas as pd
+import plotly.express as px
 
-st.set_page_config(page_title="EcoScore Live", page_icon="🌿")
-
-st.title("🌿 EcoScore Live Product Dashboard")
-st.markdown("Compare sustainability, price, and health of products in real-time.")
-
-# --- User Input ---
-query = st.text_input("🔍 Search for a product (e.g., Shampoo, Moisturizer):")
-
-# --- Walmart API key ---
-API_KEY = st.secrets.get("WALMART_API_KEY", "YOUR_WALMART_API_KEY_HERE")
-
-# --- Load EPA dataset ---
+# -------------------------------
+# Load Data
+# -------------------------------
 @st.cache_data
-def load_epa_data():
-    url = "https://www.epa.gov/sites/default/files/2020-09/saferchoice-certified-products.csv"
-    return pd.read_csv(url)
+def load_data():
+    df = pd.read_csv("ecoscore_data_2023.csv")
+    return df
 
-epa_df = load_epa_data()
+df = load_data()
 
-# --- Get Walmart products ---
-def search_walmart_products(query):
-    url = f"https://api.walmart.com/v3/search?query={query}&format=json&apiKey={API_KEY}"
-    resp = requests.get(url)
-    if resp.status_code == 200:
-        data = resp.json()
-        items = data.get("items", [])
-        return [
-            {
-                "name": i.get("name", ""),
-                "brand": i.get("brandName", ""),
-                "price": i.get("salePrice", "N/A"),
-                "image": i.get("mediumImage", ""),
-                "url": i.get("productUrl", "")
-            }
-            for i in items[:10]
-        ]
-    else:
-        st.error("Error fetching data from Walmart API.")
-        return []
+st.set_page_config(page_title="EcoScore Dashboard", page_icon="🌿", layout="wide")
 
-# --- Search Button ---
-if st.button("Search Products"):
-    with st.spinner("Fetching products..."):
-        products = search_walmart_products(query)
+# -------------------------------
+# App Title
+# -------------------------------
+st.title("🌿 EcoScore Dashboard — Product Sustainability Insights (2023 Baseline)")
+st.markdown("""
+Compare sustainability, carbon intensity, and health impact of everyday consumer products.
+Select a **category** and a **product** to explore details and see how it ranks against others.
+""")
 
-    if products:
-        product_names = [p["name"] for p in products]
-        selected = st.selectbox("Select a product to analyze:", product_names)
+# -------------------------------
+# Dropdown filters
+# -------------------------------
+categories = df["Category"].unique()
+selected_category = st.selectbox("Select a Category:", sorted(categories))
 
-        product = next(p for p in products if p["name"] == selected)
-        st.image(product["image"], width=200)
-        st.markdown(f"**[{product['name']}]({product['url']})**")
-        st.write(f"💰 **Price:** ${product['price']}")
-        st.write(f"🏷️ **Brand:** {product['brand']}")
+filtered_df = df[df["Category"] == selected_category]
 
-        # --- Open Beauty Facts API ---
-        search_url = f"https://world.openbeautyfacts.org/cgi/search.pl?search_terms={product['brand']} {selected}&json=1&page_size=1"
-        resp = requests.get(search_url)
+products = filtered_df["Product"].unique()
+selected_product = st.selectbox("Select a Product:", sorted(products))
 
-        ecoscore, packaging, ingredients = "N/A", "N/A", "N/A"
-        if resp.status_code == 200:
-            data = resp.json()
-            if data["count"] > 0:
-                prod = data["products"][0]
-                ecoscore = prod.get("ecoscore_grade", "N/A")
-                packaging = prod.get("packaging_text", "N/A")
-                ingredients = prod.get("ingredients_text", "N/A")
+product_info = filtered_df[filtered_df["Product"] == selected_product].iloc[0]
 
-        # --- EPA Certification ---
-        certified = epa_df[epa_df["Product or Brand Name"].str.contains(product["brand"], case=False, na=False)]
-        is_certified = not certified.empty
+# -------------------------------
+# Product Information
+# -------------------------------
+st.subheader(f"🔍 {selected_product} — {product_info['Brand']}")
+col1, col2, col3, col4 = st.columns(4)
 
-        # --- Carbon Estimate ---
-        carbon_intensity = 1.8 if "shampoo" in selected.lower() else 2.2
+col1.metric("💲 Price (USD)", f"${product_info['Price_USD']:.2f}")
+col2.metric("🌱 EcoScore", f"{product_info['EcoScore']}/100")
+col3.metric("♻️ Carbon Intensity", f"{product_info['Carbon_Intensity_gCO2eq']} gCO₂e")
+col4.metric("🧴 Packaging", product_info["Packaging_Type"])
 
-        # --- Display Sustainability ---
-        st.subheader("🌿 Sustainability Summary")
-        st.write(f"**EcoScore:** {ecoscore.upper() if ecoscore != 'N/A' else ecoscore}")
-        st.write(f"**Estimated Carbon Intensity:** {carbon_intensity} kg CO₂e per bottle")
-        st.write(f"**Packaging:** {packaging}")
-        st.write(f"**Ingredients:** {ingredients}")
+st.markdown(f"**Main Ingredients:** {product_info['Main_Ingredients']}")
 
-        if is_certified:
-            st.success("✅ EPA Safer Choice Certified")
-        else:
-            st.info("❌ Not EPA Certified")
+# -------------------------------
+# Scatter Chart — EcoScore vs Price
+# -------------------------------
+st.markdown("### 💬 Category Comparison: EcoScore vs Price (USD)")
 
-        st.markdown("---")
-        st.caption("Sources: Walmart API, Open Beauty Facts, EPA Safer Choice, estimated lifecycle data.")
+fig = px.scatter(
+    filtered_df,
+    x="Price_USD",
+    y="EcoScore",
+    text="Product",
+    color="Brand",
+    size="Carbon_Intensity_gCO2eq",
+    hover_data=["Main_Ingredients", "Packaging_Type"],
+    title=f"{selected_category}: EcoScore vs Price (2023)",
+)
 
-    else:
-        st.warning("No products found. Try a different search keyword.")
+fig.update_traces(textposition="top center")
+st.plotly_chart(fig, use_container_width=True)
+
+# -------------------------------
+# Footnote and Transparency
+# -------------------------------
+st.markdown("---")
+st.markdown("""
+### 📘 Scoring Criteria & Data Sources
+**EcoScore** combines weighted indicators:
+- 🌿 Ingredient safety & biodegradability (40%)
+- ⚡ Carbon intensity during production (30%)
+- ♻️ Packaging sustainability (20%)
+- 💰 Price fairness index (10%)
+
+**Data Sources:** EWG Database, Open Beauty Facts, Walmart Product Data (2023 baselines), Company Sustainability Reports.
+""")
+
+st.caption("Developed by EcoScore.AI — prototype for sustainable consumer transparency.")
