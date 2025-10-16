@@ -18,12 +18,11 @@ def find_col(df, candidates):
     return None
 
 # -----------------------
-# Load CSV (cached) - expects file in same folder
+# Load CSV (cached)
 # -----------------------
 @st.cache_data(ttl=3600)
 def load_data(path="ecoscore_data_2023.csv"):
     df = pd.read_csv(path)
-    # normalize columns
     df.columns = [c.strip() for c in df.columns]
     return df
 
@@ -48,100 +47,63 @@ COL_CARBON = find_col(df, ["Carbon_Intensity_gCO2eq", "Carbon_Intensity_kgCO2e",
 COL_PACK = find_col(df, ["Packaging_Type", "Packaging", "packaging", "Packaging Type"])
 COL_MAIN_ING = find_col(df, ["Main_Ingredients", "Main Ingredients", "Ingredients", "ingredients"])
 
-# ingredient_1..ingredient_5 support
 ingredient_cols = [c for c in df.columns if c.strip().lower().startswith("ingredient")]
 ingredient_cols = sorted(ingredient_cols)[:5]
 
-# verify essential columns exist
 essential = [COL_CATEGORY, COL_PRODUCT, COL_PRICE, COL_ECOSCORE, COL_CARBON]
 if not all(essential):
     st.set_page_config(page_title="EcoScore Dashboard", page_icon="🌿", layout="wide")
     st.title("EcoScore Dashboard — CSV Schema Error")
-    st.error(
-        "CSV missing required columns. Required: Category, Product, Price (USD), EcoScore, Carbon_Intensity.\n"
-        f"Detected columns: {', '.join(df.columns)}"
-    )
+    st.error("CSV missing required columns. Required: Category, Product, Price (USD), EcoScore, Carbon_Intensity.")
     st.stop()
 
-# coerce numeric types
 df[COL_PRICE] = pd.to_numeric(df[COL_PRICE], errors="coerce")
 df[COL_ECOSCORE] = pd.to_numeric(df[COL_ECOSCORE], errors="coerce")
 df[COL_CARBON] = pd.to_numeric(df[COL_CARBON], errors="coerce")
 
 # -----------------------
-# Page config and CSS tweaks (font sizes, spacing)
+# Page config & CSS tweaks
 # -----------------------
 st.set_page_config(page_title="EcoScore Dashboard", page_icon="🌿", layout="wide")
 
-# Minimal CSS for nicer typography
 st.markdown(
     """
     <style>
-    /* Font and container sizing */
-    html, body, [class*="css"]  {
+    html, body, [class*="css"] {
         font-family: Inter, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-    .big-title {
-        font-size:28px;
-        font-weight:700;
-        margin-bottom: -6px;
-    }
-    .subtitle {
-        font-size:14px;
-        color: #4b5563;
-        margin-top: -8px;
-        margin-bottom: 12px;
-    }
-    .metric-label {
-        font-size:14px;
-    }
-    .block {
-        padding: 8px 12px;
-        border-radius: 8px;
-        background-color: #ffffff;
-    }
+    .big-title { font-size:28px; font-weight:700; margin-bottom:-6px; }
+    .subtitle { font-size:14px; color:#4b5563; margin-top:-8px; margin-bottom:12px; }
+    .metric-label { font-size:13px; color:#333; }
+    .quick-insight-small { font-size:13px; color:#374151; font-weight:500; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# Header
 st.markdown('<div class="big-title">🌿 EcoScore Dashboard</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Compare price (2023 baseline), EcoScore, carbon intensity, packaging, and ingredients.</div>', unsafe_allow_html=True)
 
 # -----------------------
-# Sidebar: chart options & visitor settings
+# Sidebar
 # -----------------------
 st.sidebar.header("Chart & Page Options")
-
-chart_size_metric = st.sidebar.selectbox(
-    "Bubble size metric", 
-    ("Carbon Intensity (gCO₂e)", "EcoScore", "Price (USD)"),
-    index=0
-)
-
+chart_size_metric = st.sidebar.selectbox("Bubble size metric", 
+    ("Carbon Intensity (gCO₂e)", "EcoScore", "Price (USD)"))
 show_labels = st.sidebar.checkbox("Show labels on chart", value=True)
-chart_mode = st.sidebar.selectbox("Chart mode", ("Bubble chart (Price vs EcoScore)", "Scatter (EcoScore vs Carbon)"))
+chart_mode = st.sidebar.selectbox("Chart mode", 
+    ("Bubble chart (Price vs EcoScore)", "Scatter (EcoScore vs Carbon)"))
 
-# Visitor counter options
+# Visitor counter
 st.sidebar.markdown("---")
 st.sidebar.subheader("Visitor tracking")
-vis_mode = st.sidebar.selectbox("Visitor counting method", ("Local counter (file)", "Google Analytics (recommended)", "Session only (local)"))
+vis_mode = st.sidebar.selectbox("Visitor counting method", 
+    ("Local counter (file)", "Google Analytics (recommended)", "Session only (local)"))
 
-st.sidebar.markdown(
-    "For **Google Analytics**, set `GA_MEASUREMENT_ID` (e.g. G-XXXX) under *Settings → Secrets* in Streamlit Cloud.\n"
-    "Local file counter attempts to persist counts to `/mnt/data/visits.txt` on the server (may not persist on all hosts)."
-)
-
-# -----------------------
-# Visitor counter implementation
-# -----------------------
-vis_count = None
 vis_file_path = "/mnt/data/visits.txt"
 
 def increment_local_counter(path=vis_file_path):
     try:
-        # ensure directory exists
         os.makedirs(os.path.dirname(path), exist_ok=True)
         count = 0
         if os.path.exists(path):
@@ -167,34 +129,25 @@ def get_local_count(path=vis_file_path):
     except Exception:
         return None
 
-# Try to increment or set based on mode
 if vis_mode == "Local counter (file)":
-    cnt = increment_local_counter()
-    if cnt is None:
-        st.sidebar.warning("Local counter unavailable (write access denied). Falling back to session counter.")
-        vis_mode = "Session only (local)"
-    else:
-        vis_count = cnt
+    vis_count = increment_local_counter()
 elif vis_mode == "Session only (local)":
     if "session_visits" not in st.session_state:
         st.session_state["session_visits"] = 0
     st.session_state["session_visits"] += 1
     vis_count = st.session_state["session_visits"]
-else:  # GA mode
-    # we won't increment server-side; GA will track visits in GA console
+else:
     vis_count = None
 
-# display visits in sidebar (or message)
 if vis_count is not None:
     st.sidebar.markdown(f"**Page visits:** {vis_count}")
 else:
-    st.sidebar.markdown("**Page visits:** (use Google Analytics or Local counter)")
+    st.sidebar.markdown("**Page visits:** (Google Analytics active)")
 
-# If GA ID present in secrets, inject GA snippet
+# Inject Google Analytics script
 GA_ID = st.secrets.get("GA_MEASUREMENT_ID", None) if "secrets" in dir(st) else None
 if GA_ID and vis_mode == "Google Analytics (recommended)":
     ga_snippet = f"""
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -203,37 +156,32 @@ if GA_ID and vis_mode == "Google Analytics (recommended)":
       gtag('config', '{GA_ID}');
     </script>
     """
-    st.components.v1.html(ga_snippet)
+    st.components.v1.html(ga_snippet, height=0, width=0)
 
 # -----------------------
 # Category & product selection
 # -----------------------
 categories = sorted(df[COL_CATEGORY].dropna().unique())
 selected_category = st.selectbox("Select category", categories)
-
 df_cat = df[df[COL_CATEGORY] == selected_category].copy()
 product_list = sorted(df_cat[COL_PRODUCT].astype(str).unique())
-
-selected_products = st.multiselect("Select products to compare (searchable)", product_list, default=product_list[:2])
-
+selected_products = st.multiselect("Select products to compare", product_list, default=product_list[:2])
 if not selected_products:
-    st.info("Please select one or more products to compare.")
+    st.info("Please select one or more products.")
     st.stop()
 
 compare_df = df_cat[df_cat[COL_PRODUCT].isin(selected_products)].copy()
 
 # -----------------------
-# Build display table (extract up to 5 ingredients)
+# Build display table
 # -----------------------
 def extract_ingredients(row):
     if ingredient_cols:
         ing = [str(row.get(c, "")).strip() for c in ingredient_cols if str(row.get(c, "")).strip()]
-        ing = ing[:5] + [""] * max(0, 5 - len(ing))
-        return ing
+        return ing[:5] + [""] * max(0, 5 - len(ing))
     if COL_MAIN_ING and pd.notna(row.get(COL_MAIN_ING)):
         parts = [p.strip() for p in str(row.get(COL_MAIN_ING)).split(",") if p.strip()]
-        parts = parts[:5] + [""] * max(0, 5 - len(parts))
-        return parts
+        return parts[:5] + [""] * max(0, 5 - len(parts))
     return [""] * 5
 
 rows = []
@@ -254,13 +202,9 @@ for _, r in compare_df.iterrows():
     })
 
 display_df = pd.DataFrame(rows)
-display_df = display_df[
-    ["Product Name", "Brand", "Price (USD)", "EcoScore", "Carbon (gCO₂e)", "Packaging",
-     "Ingredient 1", "Ingredient 2", "Ingredient 3", "Ingredient 4", "Ingredient 5"]
-]
 
 # -----------------------
-# Show comparison table with nicer formatting
+# Show comparison table
 # -----------------------
 st.markdown("### 🧾 Comparison Table")
 st.dataframe(display_df.style.format({
@@ -269,13 +213,13 @@ st.dataframe(display_df.style.format({
     "Carbon (gCO₂e)": "{:.1f}".format
 }), use_container_width=True)
 
-# CSV download for selected comparison
 csv_buf = StringIO()
 display_df.to_csv(csv_buf, index=False)
-st.download_button("⬇️ Download comparison CSV", data=csv_buf.getvalue().encode(), file_name="ecoscore_comparison.csv", mime="text/csv")
+st.download_button("⬇️ Download comparison CSV", data=csv_buf.getvalue().encode(),
+                   file_name="ecoscore_comparison.csv", mime="text/csv")
 
 # -----------------------
-# Category summary (averages, totals)
+# Category summary
 # -----------------------
 st.markdown("### 📊 Category Summary")
 avg_ecoscore = df_cat[COL_ECOSCORE].mean()
@@ -289,57 +233,25 @@ col2.metric("Average Price (USD)", f"${avg_price:.2f}")
 col3.metric("Median Price (USD)", f"${median_price:.2f}")
 col4.metric("Total Carbon (gCO₂e)", f"{total_carbon:.0f}")
 
-st.markdown("Top 3 products in this category (by EcoScore):")
-top3 = df_cat.sort_values(by=COL_ECOSCORE, ascending=False).head(3)
-for i, (_, r) in enumerate(top3.iterrows(), start=1):
-    prod_name = r[COL_PRODUCT]
-    prod_score = r[COL_ECOSCORE]
-    prod_price = r[COL_PRICE]
-    st.write(f"{i}. **{prod_name}** — EcoScore: {prod_score} — Price: ${prod_price:.2f}")
-
 # -----------------------
-# Charting area — options applied
+# Chart
 # -----------------------
 st.markdown("### 📈 Comparison Chart")
 chart_df = display_df.copy()
-
-# choose bubble size
-if chart_size_metric == "Carbon Intensity (gCO₂e)":
-    size_col = "Carbon (gCO₂e)"
-elif chart_size_metric == "EcoScore":
-    size_col = "EcoScore"
+size_col = {"Carbon Intensity (gCO₂e)": "Carbon (gCO₂e)", "EcoScore": "EcoScore", "Price (USD)": "Price (USD)"}[chart_size_metric]
+if chart_mode.startswith("Bubble"):
+    fig = px.scatter(chart_df, x="Price (USD)", y="EcoScore", color="Brand", size=size_col,
+                     hover_data=["Product Name", "Packaging"], text="Product Name" if show_labels else None,
+                     title=f"{selected_category} — Price vs EcoScore")
 else:
-    size_col = "Price (USD)"
-
-if chart_mode == "Bubble chart (Price vs EcoScore)":
-    fig = px.scatter(
-        chart_df,
-        x="Price (USD)",
-        y="EcoScore",
-        color="Brand",
-        size=size_col,
-        hover_data=["Product Name", "Brand", "Packaging", "Ingredient 1", "Ingredient 2"],
-        text="Product Name" if show_labels else None,
-        title=f"{selected_category} — Price vs EcoScore"
-    )
-else:
-    fig = px.scatter(
-        chart_df,
-        x="EcoScore",
-        y="Carbon (gCO₂e)",
-        color="Brand",
-        size=size_col,
-        hover_data=["Product Name", "Brand", "Packaging", "Ingredient 1", "Ingredient 2"],
-        text="Product Name" if show_labels else None,
-        title=f"{selected_category} — EcoScore vs Carbon Intensity"
-    )
-fig.update_layout(title_x=0.5, legend_title_text="Brand", height=600)
-fig.update_traces(marker=dict(line=dict(width=0.5, color="DarkSlateGrey")))
-
+    fig = px.scatter(chart_df, x="EcoScore", y="Carbon (gCO₂e)", color="Brand", size=size_col,
+                     hover_data=["Product Name", "Packaging"], text="Product Name" if show_labels else None,
+                     title=f"{selected_category} — EcoScore vs Carbon Intensity")
+fig.update_layout(title_x=0.5, legend_title_text="Brand", height=550)
 st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------
-# Quick insights for selected products
+# Quick Insights (smaller font)
 # -----------------------
 st.markdown("### 🌟 Quick Insights (selected products)")
 best_overall = display_df.loc[display_df["EcoScore"].idxmax()]
@@ -347,22 +259,21 @@ lowest_carbon = display_df.loc[display_df["Carbon (gCO₂e)"].idxmin()]
 best_value = display_df.loc[(display_df["EcoScore"] / display_df["Price (USD)"]).idxmax()]
 
 c1, c2, c3 = st.columns(3)
-c1.metric("Best EcoScore", best_overall["Product Name"], f"{best_overall['EcoScore']}/100")
-c2.metric("Lowest Carbon", lowest_carbon["Product Name"], f"{lowest_carbon['Carbon (gCO₂e)']:.1f} gCO₂e")
-c3.metric("Best EcoScore per $", best_value["Product Name"], f"{best_value['EcoScore']:.1f} / ${best_value['Price (USD)']:.2f}")
+c1.markdown(f"<div class='metric-label'>Best EcoScore:</div><div class='quick-insight-small'>{best_overall['Product Name']} ({best_overall['EcoScore']}/100)</div>", unsafe_allow_html=True)
+c2.markdown(f"<div class='metric-label'>Lowest Carbon:</div><div class='quick-insight-small'>{lowest_carbon['Product Name']} ({lowest_carbon['Carbon (gCO₂e)']:.1f} gCO₂e)</div>", unsafe_allow_html=True)
+c3.markdown(f"<div class='metric-label'>Best Value:</div><div class='quick-insight-small'>{best_value['Product Name']} (EcoScore/${best_value['Price (USD)']:.2f})</div>", unsafe_allow_html=True)
 
 # -----------------------
-# Footer: methodology and data sources
+# Footer
 # -----------------------
 st.markdown("---")
 st.markdown("### 📘 Methodology & Data Sources")
-st.markdown(
-    "- **EcoScore** (0–100): composite of ingredient safety (40%), carbon intensity (30%), packaging sustainability (20%), price fairness (10%).\n"
-    "- **Carbon Intensity**: expressed in gCO₂e per unit using 2023 baseline estimates.\n"
-    "- **Prices**: 2023 U.S. average retail prices (baseline) used for fair comparisons.\n"
-    "- **Ingredients**: top-listed components (up to 5) from product labels and public databases.\n"
-    "\n**Data sources**: Open Beauty Facts, Open Food Facts, EWG Skin Deep, retailer baselines (2023), manufacturer disclosures. This is a prototype — verify data for high-stakes decisions."
-)
-
-st.caption(f"Generated: {datetime.datetime.utcnow().date().isoformat()}  •  Built with ❤ by EcoScore.AI — update the CSV to add products or categories.")
+st.markdown("""
+- **EcoScore (0–100)** = Ingredient safety (40%) + Carbon intensity (30%) + Packaging sustainability (20%) + Price fairness (10%)  
+- **Carbon Intensity** = gCO₂e per product unit, 2023 baseline  
+- **Prices** = 2023 average U.S. retail prices (baseline)  
+- **Ingredients** = extracted top-listed components (max 5)  
+**Data sources:** Open Beauty Facts, EWG Skin Deep, Open Food Facts, and 2023 retail data.
+""")
+st.caption(f"Generated {datetime.datetime.utcnow().date().isoformat()} • Built with ❤ by EcoScore.AI — update CSV anytime.")
 
