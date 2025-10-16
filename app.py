@@ -80,7 +80,8 @@ st.markdown("""
 - ♻️ Packaging sustainability (20%)
 - 💰 Price fairness index (10%)
 
-**Data Sources:** EWG Database, Open Beauty Facts, Walmart Product Data (2023 baselines), Company Sustainability Reports.
+**Data Sources:** EWG Database, Open Beauty Facts, Walmart Product Data (2023 baseline pricing), Company Sustainability Reports.
 """)
 
 st.caption("Developed by EcoScore.AI — prototype for sustainable consumer transparency.")
+
