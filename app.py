@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 # ==============================
 # Page Configuration
@@ -83,14 +84,72 @@ if selected_products:
     else:
         st.warning("⚠️ No matching columns found to display.")
 
-    # ---- EcoScore vs Price Chart ----
-    chart_cols = [c for c in ["EcoScore", "Price_USD"] if c in available_cols]
-    if len(chart_cols) == 2:
-        st.markdown("### 💡 EcoScore vs Price Comparison")
-        st.bar_chart(
-            df_selected.set_index("Product")[chart_cols],
-            use_container_width=True
-        )
+    # ==============================
+    # Scatter Plots
+    # ==============================
+    st.markdown("### 💡 Visual Insights")
+
+    col_plot1, col_plot2 = st.columns(2)
+
+    # ---- EcoScore vs Price ----
+    if "EcoScore" in available_cols and "Price_USD" in available_cols:
+        with col_plot1:
+            fig1 = px.scatter(
+                df_selected,
+                x="Price_USD",
+                y="EcoScore",
+                color="Product",
+                size="EcoScore",
+                hover_data=["Packaging", "Carbon_Intensity_gCO2e"],
+                title="EcoScore vs. Price (Sustainability vs Cost)"
+            )
+            fig1.update_traces(marker=dict(line=dict(width=1, color='DarkSlateGrey')))
+            fig1.update_layout(
+                title_font=dict(size=16, color="#0b4b26"),
+                paper_bgcolor="white",
+                plot_bgcolor="#eef6ef",
+                font=dict(color="#0b4b26"),
+                legend_title_text="Products"
+            )
+            st.plotly_chart(fig1, use_container_width=True)
+
+    # ---- EcoScore vs Carbon Intensity ----
+    if "EcoScore" in available_cols and "Carbon_Intensity_gCO2e" in available_cols:
+        with col_plot2:
+            fig2 = px.scatter(
+                df_selected,
+                x="Carbon_Intensity_gCO2e",
+                y="EcoScore",
+                color="Product",
+                size="EcoScore",
+                hover_data=["Packaging", "Price_USD"],
+                title="EcoScore vs. Carbon Intensity (Sustainability vs Emissions)"
+            )
+            fig2.update_traces(marker=dict(line=dict(width=1, color='DarkSlateGrey')))
+            fig2.update_layout(
+                title_font=dict(size=16, color="#0b4b26"),
+                paper_bgcolor="white",
+                plot_bgcolor="#eef6ef",
+                font=dict(color="#0b4b26"),
+                legend_title_text="Products"
+            )
+            st.plotly_chart(fig2, use_container_width=True)
+
+    # ==============================
+    # Score Explanation
+    # ==============================
+    st.markdown("---")
+    st.markdown(
+        """
+        ### 🌱 How EcoScore Works
+        - **EcoScore (0–100)**: Composite rating based on product sustainability — higher means better.
+        - **Carbon Intensity (gCO₂e)**: Estimated emissions per functional unit; lower is greener.
+        - **Packaging Impact**: Evaluates recyclability and material type (plastic, glass, paper, refillable).
+        - **Price (USD)**: Typical retail price, used to understand cost-to-sustainability balance.
+        - **Main Ingredients**: Key formulation components used for health and environmental safety screening.
+        """,
+        unsafe_allow_html=True
+    )
 
 else:
     st.info("👈 Use the sidebar to select a category and products for comparison.")
@@ -104,3 +163,4 @@ st.markdown("""
         © 2025 EcoScore.AI — All rights reserved
     </div>
 """, unsafe_allow_html=True)
+
