@@ -2,165 +2,140 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ==============================
-# Page Configuration
-# ==============================
-st.set_page_config(
-    page_title="EcoScore.AI Dashboard",
-    page_icon="🌿",
-    layout="wide"
-)
+# ------------------------------------------------
+# App Configuration
+# ------------------------------------------------
+st.set_page_config(page_title="EcoScore.AI", page_icon="🌿", layout="wide")
 
-# ==============================
-# Load Dataset
-# ==============================
+# ------------------------------------------------
+# Load Data
+# ------------------------------------------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("ecoscore_data_2023.csv")
+    df = pd.read_csv("ecoscore_data_extended.csv")
+    return df
 
-data = load_data()
+df = load_data()
 
-# ==============================
+# ------------------------------------------------
 # Header
-# ==============================
+# ------------------------------------------------
 col1, col2 = st.columns([1, 5])
 with col1:
     st.image(
         "https://upload.wikimedia.org/wikipedia/commons/7/70/Leaf_icon_green.svg",
-        width=120
+        width=100,
     )
 with col2:
     st.markdown(
-        "<h1 style='color:#0c6b2f; font-size:42px; font-weight:700;'>EcoScore.AI 🌍</h1>",
-        unsafe_allow_html=True
+        "<h1 style='color:#0c6b2f; font-size:38px; font-weight:700;'>EcoScore.AI Dashboard</h1>",
+        unsafe_allow_html=True,
     )
     st.markdown(
-        "<h5 style='color:#2b7a3e;'>Compare sustainability, price, and carbon impact across everyday products.</h5>",
-        unsafe_allow_html=True
+        "<p style='font-size:18px; color:#2b7a3e;'>Compare sustainability, price, and carbon intensity across daily-use products.</p>",
+        unsafe_allow_html=True,
     )
 
 st.markdown("---")
 
-# ==============================
-# Sidebar Filters
-# ==============================
-st.sidebar.header("🔍 Filter Options")
+# ------------------------------------------------
+# Dropdowns for Category & Product Selection
+# ------------------------------------------------
+categories = df["Category"].unique().tolist()
+selected_category = st.selectbox("Select a Category", sorted(categories))
 
-categories = sorted(data["Category"].unique())
-selected_category = st.sidebar.selectbox("Select Product Category", categories)
+filtered_df = df[df["Category"] == selected_category]
+products = filtered_df["Product"].unique().tolist()
+selected_products = st.multiselect("Select one or more Products", sorted(products))
 
-products = sorted(data[data["Category"] == selected_category]["Product"].unique())
-selected_products = st.sidebar.multiselect("Select Products to Compare", products)
-
-# ==============================
-# Display Section
-# ==============================
+# ------------------------------------------------
+# Display Selected Product Info
+# ------------------------------------------------
 if selected_products:
-    df_selected = data[data["Product"].isin(selected_products)]
+    df_selected = filtered_df[filtered_df["Product"].isin(selected_products)]
 
-    st.markdown(
-        f"<h3 style='color:#0b4b26;'>Quick Insights — {selected_category}</h3>",
-        unsafe_allow_html=True
+    # Ensure numeric types for plotting
+    for col in ["Price_USD", "EcoScore", "Carbon_Intensity_gCO2e"]:
+        if col in df_selected.columns:
+            df_selected[col] = pd.to_numeric(df_selected[col], errors="coerce")
+
+    st.subheader("Product Comparison Table")
+    st.dataframe(
+        df_selected[
+            [
+                "Product",
+                "Price_USD",
+                "EcoScore",
+                "Carbon_Intensity_gCO2e",
+                "Packaging",
+                "Main_Ingredients",
+            ]
+        ].style.format({"Price_USD": "${:,.2f}", "Carbon_Intensity_gCO2e": "{:.1f} gCO₂e"}),
+        use_container_width=True,
     )
 
-    # ---- Safe Column Display ----
-    available_cols = df_selected.columns.tolist()
-    desired_cols = [
-        "Product",
-        "Price_USD",
-        "EcoScore",
-        "Carbon_Intensity_gCO2e",
-        "Packaging",
-        "Main_Ingredients"
-    ]
-    show_cols = [col for col in desired_cols if col in available_cols]
-
-    if show_cols:
-        st.dataframe(
-            df_selected[show_cols],
-            use_container_width=True,
-            hide_index=True
-        )
-    else:
-        st.warning("⚠️ No matching columns found to display.")
-
-    # ==============================
-    # Scatter Plots
-    # ==============================
-    st.markdown("### 💡 Visual Insights")
-
-    col_plot1, col_plot2 = st.columns(2)
-
-    # ---- EcoScore vs Price ----
-    if "EcoScore" in available_cols and "Price_USD" in available_cols:
-        with col_plot1:
-            fig1 = px.scatter(
-                df_selected,
-                x="Price_USD",
-                y="EcoScore",
-                color="Product",
-                size="EcoScore",
-                hover_data=["Packaging", "Carbon_Intensity_gCO2e"],
-                title="EcoScore vs. Price (Sustainability vs Cost)"
-            )
-            fig1.update_traces(marker=dict(line=dict(width=1, color='DarkSlateGrey')))
-            fig1.update_layout(
-                title_font=dict(size=16, color="#0b4b26"),
-                paper_bgcolor="white",
-                plot_bgcolor="#eef6ef",
-                font=dict(color="#0b4b26"),
-                legend_title_text="Products"
-            )
-            st.plotly_chart(fig1, use_container_width=True)
-
-    # ---- EcoScore vs Carbon Intensity ----
-    if "EcoScore" in available_cols and "Carbon_Intensity_gCO2e" in available_cols:
-        with col_plot2:
-            fig2 = px.scatter(
-                df_selected,
-                x="Carbon_Intensity_gCO2e",
-                y="EcoScore",
-                color="Product",
-                size="EcoScore",
-                hover_data=["Packaging", "Price_USD"],
-                title="EcoScore vs. Carbon Intensity (Sustainability vs Emissions)"
-            )
-            fig2.update_traces(marker=dict(line=dict(width=1, color='DarkSlateGrey')))
-            fig2.update_layout(
-                title_font=dict(size=16, color="#0b4b26"),
-                paper_bgcolor="white",
-                plot_bgcolor="#eef6ef",
-                font=dict(color="#0b4b26"),
-                legend_title_text="Products"
-            )
-            st.plotly_chart(fig2, use_container_width=True)
-
-    # ==============================
-    # Score Explanation
-    # ==============================
-    st.markdown("---")
-    st.markdown(
-        """
-        ### 🌱 How EcoScore Works
-        - **EcoScore (0–100)**: Composite rating based on product sustainability — higher means better.
-        - **Carbon Intensity (gCO₂e)**: Estimated emissions per functional unit; lower is greener.
-        - **Packaging Impact**: Evaluates recyclability and material type (plastic, glass, paper, refillable).
-        - **Price (USD)**: Typical retail price, used to understand cost-to-sustainability balance.
-        - **Main Ingredients**: Key formulation components used for health and environmental safety screening.
-        """,
-        unsafe_allow_html=True
+    # ------------------------------------------------
+    # Scatter Plot 1: EcoScore vs Price
+    # ------------------------------------------------
+    st.markdown("### 📊 EcoScore vs Price (Sustainability vs Cost)")
+    fig1 = px.scatter(
+        df_selected,
+        x="Price_USD",
+        y="EcoScore",
+        color="Product",
+        size="EcoScore",
+        hover_data=["Category"],
+        title="EcoScore vs Price",
     )
+    fig1.update_layout(title_x=0.5, template="plotly_white", height=400)
+    st.plotly_chart(fig1, use_container_width=True)
+
+    # ------------------------------------------------
+    # Scatter Plot 2: EcoScore vs Carbon Intensity
+    # ------------------------------------------------
+    st.markdown("### 🌎 EcoScore vs Carbon Intensity")
+    fig2 = px.scatter(
+        df_selected,
+        x="Carbon_Intensity_gCO2e",
+        y="EcoScore",
+        color="Product",
+        size="Price_USD",
+        hover_data=["Category"],
+        title="EcoScore vs Carbon Intensity",
+    )
+    fig2.update_layout(title_x=0.5, template="plotly_white", height=400)
+    st.plotly_chart(fig2, use_container_width=True)
 
 else:
-    st.info("👈 Use the sidebar to select a category and products for comparison.")
+    st.info("👈 Please select a category and one or more products to compare.")
 
-# ==============================
+# ------------------------------------------------
+# EcoScore Explanation
+# ------------------------------------------------
+st.markdown("---")
+st.markdown(
+    """
+    ### ♻️ About EcoScore
+    EcoScore combines multiple sustainability indicators:
+    - **Environmental footprint**: Life cycle carbon emissions and resource usage  
+    - **Packaging impact**: Material recyclability and volume  
+    - **Ingredient safety**: Environmental and health considerations  
+    - **Social transparency**: Ethical sourcing and corporate practices  
+
+    A higher **EcoScore (closer to 100)** indicates a more environmentally friendly and transparent product.
+    """,
+    unsafe_allow_html=True,
+)
+
+# ------------------------------------------------
 # Footer
-# ==============================
-st.markdown("""
-    <hr style='border:1px solid #9bcc9b;'>
-    <div style='text-align:center; color:#0b4b26; font-size:14px;'>
-        © 2025 EcoScore.AI — All rights reserved
+# ------------------------------------------------
+st.markdown("---")
+st.markdown(
+    """
+    <div style='text-align:center; color:#2b7a3e; font-size:14px;'>
+    © 2025 EcoScore.AI — All rights reserved
     </div>
-""", unsafe_allow_html=True)
-
+    """,
+    unsafe_allow_html=True,
+)
