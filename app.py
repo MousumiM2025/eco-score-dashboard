@@ -24,13 +24,15 @@ data = load_data()
 # ==============================
 col1, col2 = st.columns([1, 5])
 with col1:
-    # Simple leaf logo placeholder
-    st.image("https://upload.wikimedia.org/wikipedia/commons/7/70/Leaf_icon_green.svg",
-             width=100)
+    st.image(
+        "https://upload.wikimedia.org/wikipedia/commons/7/70/Leaf_icon_green.svg",
+        width=120
+    )
 with col2:
     st.markdown(
         "<h1 style='color:#0c6b2f; font-size:42px; font-weight:700;'>EcoScore.AI 🌍</h1>",
-        unsafe_allow_html=True)
+        unsafe_allow_html=True
+    )
     st.markdown(
         "<h5 style='color:#2b7a3e;'>Compare sustainability, price, and carbon impact across everyday products.</h5>",
         unsafe_allow_html=True
@@ -60,21 +62,35 @@ if selected_products:
         unsafe_allow_html=True
     )
 
-    # Display main table
-    st.dataframe(
-        df_selected[
-            ["Product", "Price_USD", "EcoScore", "Carbon_Intensity_gCO2e", "Packaging", "Main_Ingredients"]
-        ],
-        use_container_width=True,
-        hide_index=True
-    )
+    # ---- Safe Column Display ----
+    available_cols = df_selected.columns.tolist()
+    desired_cols = [
+        "Product",
+        "Price_USD",
+        "EcoScore",
+        "Carbon_Intensity_gCO2e",
+        "Packaging",
+        "Main_Ingredients"
+    ]
+    show_cols = [col for col in desired_cols if col in available_cols]
 
-    # Streamlit built-in chart (no matplotlib dependency)
-    st.markdown("### 💡 EcoScore vs Price")
-    st.bar_chart(
-        df_selected.set_index("Product")[["EcoScore", "Price_USD"]],
-        use_container_width=True
-    )
+    if show_cols:
+        st.dataframe(
+            df_selected[show_cols],
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.warning("⚠️ No matching columns found to display.")
+
+    # ---- EcoScore vs Price Chart ----
+    chart_cols = [c for c in ["EcoScore", "Price_USD"] if c in available_cols]
+    if len(chart_cols) == 2:
+        st.markdown("### 💡 EcoScore vs Price Comparison")
+        st.bar_chart(
+            df_selected.set_index("Product")[chart_cols],
+            use_container_width=True
+        )
 
 else:
     st.info("👈 Use the sidebar to select a category and products for comparison.")
@@ -88,4 +104,3 @@ st.markdown("""
         © 2025 EcoScore.AI — All rights reserved
     </div>
 """, unsafe_allow_html=True)
-
