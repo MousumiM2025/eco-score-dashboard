@@ -6,6 +6,8 @@ requests
 pandas
 numpy
 plotly
+matplotlib
+Pillow
 
 # If you later connect your API backend (FastAPI)
 fastapi
@@ -13,5 +15,6 @@ uvicorn
 
 # For deployment compatibility
 gunicorn
+
 
 
