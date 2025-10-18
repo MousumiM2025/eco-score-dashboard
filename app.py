@@ -9,10 +9,10 @@ st.set_page_config(page_title="EcoScore Dashboard", layout="wide")
 
 st.image(
     "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Leaf_icon_02.svg/512px-Leaf_icon_02.svg.png",
-    width=80,
+    width=100,
 )
-st.title("🌱 EcoScore Dashboard — Extended Version")
-st.markdown("### An interactive tool to explore sustainability metrics for products")
+st.title("🌱 EcoScore Dashboard — Product Sustainability Insights")
+st.markdown("Explore how personal care products perform on environmental sustainability metrics.")
 
 # --------------------------
 # LOAD DATA
@@ -42,48 +42,41 @@ col_ecoscore = find_col(["ecoscore", "eco_score", "score"])
 col_carbon = find_col(["carbon_intensity_gco2e", "carbon_intensity", "emissions", "co2_intensity"])
 col_packaging = find_col(["packaging", "package_type", "material"])
 
-# Display detected columns (debug)
-with st.expander("🔍 Detected column mapping"):
-    st.write({
-        "Product": col_product,
-        "Category": col_category,
-        "Price": col_price,
-        "EcoScore": col_ecoscore,
-        "Carbon Intensity": col_carbon,
-        "Packaging": col_packaging,
-    })
-
 # --------------------------
-# SIDEBAR FILTERS
+# DROPDOWN FILTERS
 # --------------------------
-st.sidebar.header("🎚️ Filters")
+st.markdown("### 🔎 Select a Product Category or Product Name")
 
-if col_price:
-    min_price, max_price = df[col_price].min(), df[col_price].max()
-    price_range = st.sidebar.slider(
-        "Select Price Range ($)", float(min_price), float(max_price), (float(min_price), float(max_price))
-    )
+if col_category:
+    category_list = sorted(df[col_category].dropna().unique())
+    selected_category = st.selectbox("Select Category", ["All"] + category_list)
 else:
-    price_range = None
+    selected_category = "All"
 
-if col_ecoscore:
-    min_score, max_score = df[col_ecoscore].min(), df[col_ecoscore].max()
-    score_range = st.sidebar.slider(
-        "Select EcoScore Range", float(min_score), float(max_score), (float(min_score), float(max_score))
-    )
+if col_product:
+    if selected_category != "All":
+        filtered_df = df[df[col_category] == selected_category]
+    else:
+        filtered_df = df
+    product_list = sorted(filtered_df[col_product].dropna().unique())
+    selected_product = st.selectbox("Select Product", ["All"] + product_list)
 else:
-    score_range = None
+    selected_product = "All"
+    filtered_df = df
 
-df_selected = df.copy()
-if price_range and col_price:
-    df_selected = df_selected[df_selected[col_price].between(price_range[0], price_range[1])]
-if score_range and col_ecoscore:
-    df_selected = df_selected[df_selected[col_ecoscore].between(score_range[0], score_range[1])]
+# Filter data
+if selected_category != "All":
+    df_selected = df[df[col_category] == selected_category]
+else:
+    df_selected = df.copy()
+
+if selected_product != "All":
+    df_selected = df_selected[df_selected[col_product] == selected_product]
 
 # --------------------------
-# MAIN DATA DISPLAY
+# DATA DISPLAY
 # --------------------------
-st.markdown("### 📊 Filtered Data")
+st.markdown("### 📊 Selected Products")
 try:
     cols_to_show = [c for c in [col_product, col_category, col_price, col_ecoscore, col_carbon, col_packaging] if c]
     st.dataframe(
@@ -96,7 +89,7 @@ try:
         use_container_width=True,
     )
 except KeyError:
-    st.warning("⚠️ Some expected columns were not found. Check column names above.")
+    st.warning("⚠️ Some expected columns were not found. Please check column names in your CSV.")
 
 # --------------------------
 # SCATTER PLOTS
@@ -112,8 +105,8 @@ with col1:
             x=col_ecoscore,
             y=col_price,
             color=col_category,
-            title="EcoScore vs Price",
             hover_data=[col_product],
+            title="EcoScore vs Price (Sustainability vs Cost)",
             trendline="ols",
         )
         st.plotly_chart(fig1, use_container_width=True)
@@ -127,8 +120,8 @@ with col2:
             x=col_ecoscore,
             y=col_carbon,
             color=col_category,
-            title="EcoScore vs Carbon Intensity",
             hover_data=[col_product],
+            title="EcoScore vs Carbon Intensity (Sustainability vs Emissions)",
             trendline="ols",
         )
         st.plotly_chart(fig2, use_container_width=True)
@@ -136,19 +129,20 @@ with col2:
         st.info("EcoScore or Carbon Intensity column not found.")
 
 # --------------------------
-# EXPLANATION SECTION
+# EXPLANATION
 # --------------------------
 st.markdown("""
 ---
 ### ♻️ Understanding Carbon Intensity
-Products with **higher carbon intensity** often have:
-- 🌍 Longer or more complex supply chains  
-- ⚙️ Energy-intensive manufacturing steps  
-- 🧴 Non-recyclable or fossil-based packaging  
-- 💰 Lower EcoScore (more emissions per function)
 
-Improving packaging, sourcing cleaner materials, or shifting to renewable energy can
-**raise EcoScore and reduce overall carbon footprint**.
+Products with **higher carbon intensity** often have:
+- 🌍 Long supply chains or imported raw materials  
+- ⚙️ Energy-intensive manufacturing or chemical processes  
+- 🧴 Non-recyclable or fossil-based packaging  
+- 💰 Lower EcoScore due to higher lifecycle emissions  
+
+Improving packaging recyclability, switching to renewable energy, and optimizing transport can
+**increase EcoScore and lower total CO₂ emissions**.
 """)
 
 # --------------------------
@@ -156,5 +150,4 @@ Improving packaging, sourcing cleaner materials, or shifting to renewable energy
 # --------------------------
 st.markdown("---")
 st.caption("Developed for sustainability analytics and eco-innovation 🌎")
-
 
