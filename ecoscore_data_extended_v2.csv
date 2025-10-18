@@ -1,0 +1,51 @@
+Product,Category,Price_USD,EcoScore,Carbon_Intensity_gCO2e,Packaging,Main_Ingredients,Country,Recyclability_Score,Country_Emission_Factor,Adj_Carbon_Intensity
+Shampoo Brand 1,Shampoo,11.34,63,496.8,Aluminum,"Shea Butter, Vitamin E, Fragrance, Glycerin, Aloe Vera",Japan,80,1.0,496.8
+Shampoo Brand 2,Shampoo,17.71,61,92.1,Paper,"Shea Butter, Cocamidopropyl Betaine, Vitamin E, Aloe Vera, Glycerin",Canada,85,0.7,64.5
+Shampoo Brand 3,Shampoo,5.21,41,461.4,Paper,"Vitamin E, Cocamidopropyl Betaine, Sodium Laureth Sulfate, Shea Butter, Glycerin",USA,85,1.0,461.4
+Shampoo Brand 4,Shampoo,21.11,64,128.8,Paper,"Cocamidopropyl Betaine, Vitamin E, Glycerin, Sodium Laureth Sulfate, Aloe Vera",India,85,1.5,193.2
+Shampoo Brand 5,Shampoo,22.52,45,230.5,Aluminum,"Glycerin, Water, Cocamidopropyl Betaine, Shea Butter, Fragrance",USA,80,1.0,230.5
+Conditioner Brand 1,Conditioner,12.71,87,391.6,Aluminum,"Fragrance, Water, Glycerin, Sodium Laureth Sulfate, Shea Butter",India,80,1.5,587.4
+Conditioner Brand 2,Conditioner,16.46,80,138.1,Aluminum,"Aloe Vera, Shea Butter, Water, Sodium Laureth Sulfate, Glycerin",China,80,1.8,248.6
+Conditioner Brand 3,Conditioner,20.81,71,289.5,Aluminum,"Vitamin E, Sodium Laureth Sulfate, Glycerin, Cocamidopropyl Betaine, Fragrance",Japan,80,1.0,289.5
+Conditioner Brand 4,Conditioner,5.36,86,155.6,Plastic,"Sodium Laureth Sulfate, Aloe Vera, Shea Butter, Cocamidopropyl Betaine, Water",USA,40,1.0,155.6
+Conditioner Brand 5,Conditioner,7.23,80,290.6,Paper,"Vitamin E, Water, Shea Butter, Glycerin, Fragrance",France,85,0.6,174.4
+Lotion Brand 1,Lotion,17.31,71,450.7,Paper,"Water, Fragrance, Cocamidopropyl Betaine, Vitamin E, Sodium Laureth Sulfate",Brazil,85,0.9,405.6
+Lotion Brand 2,Lotion,16.66,84,135.3,Aluminum,"Cocamidopropyl Betaine, Vitamin E, Shea Butter, Water, Aloe Vera",China,80,1.8,243.5
+Lotion Brand 3,Lotion,19.34,84,383.7,Plastic,"Cocamidopropyl Betaine, Aloe Vera, Fragrance, Sodium Laureth Sulfate, Vitamin E",Brazil,40,0.9,345.3
+Lotion Brand 4,Lotion,28.66,65,289.7,Aluminum,"Vitamin E, Aloe Vera, Glycerin, Water, Shea Butter",France,80,0.6,173.8
+Lotion Brand 5,Lotion,7.18,41,343.6,Glass,"Vitamin E, Glycerin, Shea Butter, Cocamidopropyl Betaine, Aloe Vera",Brazil,90,0.9,309.2
+Toothpaste Brand 1,Toothpaste,17.59,47,466.3,Plastic,"Cocamidopropyl Betaine, Aloe Vera, Shea Butter, Glycerin, Vitamin E",Germany,40,0.8,373.0
+Toothpaste Brand 2,Toothpaste,22.46,45,297.7,Plastic,"Fragrance, Sodium Laureth Sulfate, Aloe Vera, Cocamidopropyl Betaine, Vitamin E",China,40,1.8,535.9
+Toothpaste Brand 3,Toothpaste,18.38,55,298.0,Glass,"Water, Sodium Laureth Sulfate, Fragrance, Shea Butter, Aloe Vera",Germany,90,0.8,238.4
+Toothpaste Brand 4,Toothpaste,19.69,84,324.6,Plastic,"Aloe Vera, Shea Butter, Fragrance, Vitamin E, Water",China,40,1.8,584.3
+Toothpaste Brand 5,Toothpaste,8.89,82,455.3,Glass,"Glycerin, Aloe Vera, Water, Fragrance, Shea Butter",USA,90,1.0,455.3
+Detergent Brand 1,Detergent,19.51,42,67.2,Aluminum,"Water, Vitamin E, Cocamidopropyl Betaine, Glycerin, Fragrance",USA,80,1.0,67.2
+Detergent Brand 2,Detergent,7.99,52,433.4,Paper,"Shea Butter, Vitamin E, Glycerin, Sodium Laureth Sulfate, Aloe Vera",India,85,1.5,650.1
+Detergent Brand 3,Detergent,5.81,51,342.8,Plastic,"Vitamin E, Shea Butter, Aloe Vera, Sodium Laureth Sulfate, Fragrance",Germany,40,0.8,274.2
+Detergent Brand 4,Detergent,9.32,67,178.5,Glass,"Sodium Laureth Sulfate, Water, Fragrance, Cocamidopropyl Betaine, Glycerin",Brazil,90,0.9,160.6
+Detergent Brand 5,Detergent,18.94,72,268.2,Plastic,"Shea Butter, Glycerin, Water, Cocamidopropyl Betaine, Aloe Vera",France,40,0.6,160.9
+Sunscreen Brand 1,Sunscreen,10.68,94,192.2,Bioplastic,"Vitamin E, Sodium Laureth Sulfate, Fragrance, Shea Butter, Aloe Vera",Germany,70,0.8,153.8
+Sunscreen Brand 2,Sunscreen,7.85,88,355.3,Glass,"Fragrance, Shea Butter, Cocamidopropyl Betaine, Aloe Vera, Glycerin",Canada,90,0.7,248.7
+Sunscreen Brand 3,Sunscreen,10.59,48,354.1,Bioplastic,"Water, Vitamin E, Glycerin, Aloe Vera, Shea Butter",Germany,70,0.8,283.3
+Sunscreen Brand 4,Sunscreen,7.28,58,365.3,Aluminum,"Fragrance, Shea Butter, Sodium Laureth Sulfate, Water, Aloe Vera",China,80,1.8,657.5
+Sunscreen Brand 5,Sunscreen,13.41,80,250.7,Plastic,"Fragrance, Glycerin, Water, Sodium Laureth Sulfate, Aloe Vera",Brazil,40,0.9,225.6
+Facial Cleanser Brand 1,Facial Cleanser,5.92,80,143.2,Paper,"Glycerin, Water, Aloe Vera, Cocamidopropyl Betaine, Sodium Laureth Sulfate",USA,85,1.0,143.2
+Facial Cleanser Brand 2,Facial Cleanser,14.34,68,349.3,Glass,"Glycerin, Water, Fragrance, Aloe Vera, Vitamin E",Brazil,90,0.9,314.4
+Facial Cleanser Brand 3,Facial Cleanser,18.65,71,177.7,Aluminum,"Water, Sodium Laureth Sulfate, Vitamin E, Aloe Vera, Shea Butter",Germany,80,0.8,142.2
+Facial Cleanser Brand 4,Facial Cleanser,6.76,87,128.5,Bioplastic,"Sodium Laureth Sulfate, Glycerin, Cocamidopropyl Betaine, Water, Vitamin E",USA,70,1.0,128.5
+Facial Cleanser Brand 5,Facial Cleanser,11.32,77,162.1,Glass,"Fragrance, Cocamidopropyl Betaine, Aloe Vera, Glycerin, Water",India,90,1.5,243.2
+Deodorant Brand 1,Deodorant,22.08,89,327.1,Paper,"Fragrance, Sodium Laureth Sulfate, Vitamin E, Water, Glycerin",France,85,0.6,196.3
+Deodorant Brand 2,Deodorant,11.51,78,82.6,Plastic,"Vitamin E, Glycerin, Fragrance, Water, Sodium Laureth Sulfate",China,40,1.8,148.7
+Deodorant Brand 3,Deodorant,26.84,80,90.1,Bioplastic,"Sodium Laureth Sulfate, Water, Shea Butter, Fragrance, Aloe Vera",France,70,0.6,54.1
+Deodorant Brand 4,Deodorant,6.16,81,93.6,Paper,"Shea Butter, Vitamin E, Glycerin, Aloe Vera, Cocamidopropyl Betaine",Japan,85,1.0,93.6
+Deodorant Brand 5,Deodorant,16.75,49,76.9,Plastic,"Cocamidopropyl Betaine, Sodium Laureth Sulfate, Aloe Vera, Water, Glycerin",France,40,0.6,46.1
+Hand Sanitizer Brand 1,Hand Sanitizer,25.67,93,267.1,Bioplastic,"Cocamidopropyl Betaine, Aloe Vera, Shea Butter, Fragrance, Sodium Laureth Sulfate",India,70,1.5,400.7
+Hand Sanitizer Brand 2,Hand Sanitizer,16.29,53,312.8,Paper,"Vitamin E, Shea Butter, Sodium Laureth Sulfate, Aloe Vera, Water",USA,85,1.0,312.8
+Hand Sanitizer Brand 3,Hand Sanitizer,5.01,44,478.9,Glass,"Glycerin, Fragrance, Vitamin E, Aloe Vera, Cocamidopropyl Betaine",USA,90,1.0,478.9
+Hand Sanitizer Brand 4,Hand Sanitizer,27.74,65,61.5,Glass,"Fragrance, Aloe Vera, Sodium Laureth Sulfate, Water, Cocamidopropyl Betaine",France,90,0.6,36.9
+Hand Sanitizer Brand 5,Hand Sanitizer,11.77,95,278.2,Paper,"Cocamidopropyl Betaine, Fragrance, Aloe Vera, Water, Glycerin",India,85,1.5,417.3
+Makeup Brand 1,Makeup,12.55,77,429.0,Bioplastic,"Glycerin, Cocamidopropyl Betaine, Water, Vitamin E, Aloe Vera",Japan,70,1.0,429.0
+Makeup Brand 2,Makeup,22.64,80,121.2,Glass,"Cocamidopropyl Betaine, Sodium Laureth Sulfate, Fragrance, Vitamin E, Glycerin",Germany,90,0.8,97.0
+Makeup Brand 3,Makeup,10.85,81,79.0,Paper,"Cocamidopropyl Betaine, Fragrance, Glycerin, Sodium Laureth Sulfate, Shea Butter",France,85,0.6,47.4
+Makeup Brand 4,Makeup,29.89,57,201.8,Bioplastic,"Shea Butter, Aloe Vera, Water, Vitamin E, Fragrance",Brazil,70,0.9,181.6
+Makeup Brand 5,Makeup,16.64,89,467.5,Paper,"Aloe Vera, Shea Butter, Vitamin E, Sodium Laureth Sulfate, Fragrance",USA,85,1.0,467.5
