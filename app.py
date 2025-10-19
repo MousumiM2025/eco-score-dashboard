@@ -1,5 +1,4 @@
 import streamlit as st
-import requests
 
 # --- Page Config ---
 st.set_page_config(
@@ -13,62 +12,78 @@ st.title("🌿 EcoScore — Product Environmental & Health Transparency")
 st.markdown("Understand the **real impact** of everyday products — from ingredients to packaging and certifications.")
 
 # --- User Input ---
-product = st.text_input("🔍 Enter a product name:", "Dove Shampoo")
+st.markdown("### 🔍 Enter or choose a product name:")
+product = st.selectbox(
+    "Select a product (or type your own):",
+    ["Dove Shampoo", "Pantene Shampoo", "Herbal Essences", "Head & Shoulders", "Aveeno Daily Moisturizer"],
+    index=0
+)
 
+# --- Button to Generate Score ---
 if st.button("Get EcoScore"):
-    api_url = f"https://your-api-url/get_score?product_name={product}"
-    with st.spinner("Fetching and analyzing data..."):
-        response = requests.get(api_url)
-    
-    if response.status_code == 200:
-        data = response.json()
-        if "error" in data:
-            st.error(data["error"])
-        else:
-            st.subheader(f"🧴 {data['product']}")
-            st.write(f"**Brand:** {data['brand']}")
+    with st.spinner("Simulating EcoScore analysis..."):
+        # Mock dataset (for demo only)
+        mock_data = {
+            "product": product,
+            "brand": "Example Brand",
+            "ecoscore": 82,
+            "health_score": 76,
+            "carbon_score": 68,
+            "epa_safer_choice": True,
+            "ewg_health_ref": 85.0
+        }
+        data = mock_data
 
-            col1, col2, col3 = st.columns(3)
-            col1.metric("🌱 EcoScore", f"{data['ecoscore']}/100")
-            col2.metric("❤️ Health Score", f"{data['health_score']}/100")
-            col3.metric("⚡ Carbon Impact", f"{data['carbon_score']}/100")
+    # --- Display Results ---
+    st.subheader(f"🧴 {data['product']}")
+    st.write(f"**Brand:** {data['brand']}")
 
-            if data.get("epa_safer_choice"):
-                st.success("✅ Certified by EPA Safer Choice")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("🌱 EcoScore", f"{data['ecoscore']}/100")
+    col2.metric("❤️ Health Score", f"{data['health_score']}/100")
+    col3.metric("⚡ Carbon Impact", f"{data['carbon_score']}/100")
 
-            if data.get("ewg_health_ref"):
-                st.info(f"EWG Adjusted Health Rating: {data['ewg_health_ref']:.1f}/100")
+    if data.get("epa_safer_choice"):
+        st.success("✅ Certified by EPA Safer Choice")
 
-            st.markdown("---")
+    if data.get("ewg_health_ref"):
+        st.info(f"EWG Adjusted Health Rating: {data['ewg_health_ref']:.1f}/100")
 
-            with st.expander("🔍 How EcoScore is Calculated"):
-                st.markdown("""
-                **EcoScore (0–100)** combines environmental, health, and lifecycle factors:
+    st.markdown("---")
 
-                | Factor | Weight | Description |
-                |---------|--------|-------------|
-                | ♻️ **Packaging** | 20% | Recyclable paper/glass rated higher; plastics penalized |
-                | 💧 **Carbon Intensity** | 30% | Based on product category lifecycle emission factors |
-                | 🌱 **Ingredient Safety** | 40% | Derived from EWG hazard ratings (lower hazard = higher score) |
-                | 🏅 **Certifications** | 10% | Bonus points for EPA Safer Choice, EcoLabel, or organic certification |
+    # --- Explanation ---
+    with st.expander("🔍 How EcoScore is Calculated"):
+        st.markdown("""
+        **EcoScore (0–100)** combines environmental, health, and lifecycle factors:
 
-                **Formula:**
-                ```
-                EcoScore = (0.4 × Health) + (0.3 × Carbon) + (0.2 × Packaging) + (0.1 × CertificationBonus)
-                ```
-                """)
+        | Factor | Weight | Description |
+        |---------|--------|-------------|
+        | ♻️ **Packaging** | 20% | Recyclable paper/glass rated higher; plastics penalized |
+        | 💧 **Carbon Intensity** | 30% | Based on product category lifecycle emission factors |
+        | 🌱 **Ingredient Safety** | 40% | Derived from EWG hazard ratings (lower hazard = higher score) |
+        | 🏅 **Certifications** | 10% | Bonus points for EPA Safer Choice, EcoLabel, or organic certification |
 
-            st.markdown("---")
-            st.markdown("### 📚 Data Sources")
-            st.markdown("""
-            This analysis combines publicly available environmental and health data:
-            - [Open Beauty Facts](https://world.openbeautyfacts.org/) — cosmetics & personal care composition  
-            - [Open Food Facts](https://world.openfoodfacts.org/) — food & beverage sustainability scores  
-            - [EWG Skin Deep](https://www.ewg.org/skindeep/) — ingredient health hazard ratings  
-            - [EPA Safer Choice](https://www.epa.gov/saferchoice/products) — verified low-toxicity products  
-            ---
-            *This dashboard is for transparency and education only. Scores are estimated using open datasets.*
-            """)
-    else:
-        st.error("⚠️ API connection failed. Please try again later.")
+        **Formula:**
+        ```
+        EcoScore = (0.4 × Health) + (0.3 × Carbon) + (0.2 × Packaging) + (0.1 × CertificationBonus)
+        ```
+        """)
+
+    st.markdown("---")
+
+    # --- Data Sources ---
+    st.markdown("### 📚 Data Sources & References")
+    st.markdown("""
+    This analysis combines publicly available environmental and health data:
+    - [Open Beauty Facts](https://world.openbeautyfacts.org/) — cosmetics & personal care composition  
+    - [Open Food Facts](https://world.openfoodfacts.org/) — food & beverage sustainability scores  
+    - [EWG Skin Deep](https://www.ewg.org/skindeep/) — ingredient health hazard ratings  
+    - [EPA Safer Choice](https://www.epa.gov/saferchoice/products) — verified low-toxicity products  
+
+    ---
+    *This dashboard is for transparency and education only. Scores are estimated using open datasets.*
+    """)
+
+else:
+    st.info("👆 Enter or select a product above and click **Get EcoScore** to see results.")
 
