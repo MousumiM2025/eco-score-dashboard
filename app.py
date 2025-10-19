@@ -1,40 +1,39 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px
+import requests
 
-# --------------------------
-# Page Configuration
-# --------------------------
-st.set_page_config(page_title="EcoScore Dashboard", layout="wide")
+st.title("🌎 EcoScore — Environmental & Health Transparency for Products")
 
-st.markdown(
-    """
-    <h1 style='text-align: center; color: #2E8B57;'>🌿 EcoScore Dashboard</h1>
-    """,
-    unsafe_allow_html=True,
-)
+# --- user input ---
+product = st.text_input("Enter product name:", "Dove Shampoo")
 
-# --------------------------
-# Load Data
-# --------------------------
-@st.cache_data
-def load_data():
-    df = pd.read_csv("ecoscore_data_extended_v2.csv")
-    df.columns = df.columns.str.strip()  # Clean up column names
-    return df
+if st.button("Get EcoScore"):
+    api_url = f"https://your-api-url/get_score?product_name={product}"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        data = response.json()
+        if "error" in data:
+            st.error(data["error"])
+        else:
+            st.subheader(f"Product: {data['product']}")
+            st.write(f"**Brand:** {data['brand']}")
+            st.metric("EcoScore 🌿", f"{data['ecoscore']}/100")
+            st.metric("Health Score ❤️", f"{data['health_score']}/100")
+            st.metric("Carbon Impact ⚡", f"{data['carbon_score']}/100")
 
-df = load_data()
+            if data["epa_safer_choice"]:
+                st.success("✅ EPA Safer Choice Certified")
+            if data["ewg_health_ref"]:
+                st.info(f"EWG adjusted health rating: {data['ewg_health_ref']:.1f}")
 
-# Check key columns
-required_cols = ["Product", "Category", "Price_USD", "EcoScore", "Carbon_Intensity_gCO2e"]
-missing = [col for col in required_cols if col not in df.columns]
-if missing:
-    st.error(f"Missing columns in CSV: {missing}")
-    st.stop()
+# --- footnotes ---
+st.markdown("---")
+st.markdown("### 📚 Data Sources")
+st.markdown("""
+This EcoScore combines multiple open datasets and public registries:
+- [Open Beauty Facts](https://world.openbeautyfacts.org/) — cosmetics & personal care composition  
+- [Open Food Facts](https://world.openfoodfacts.org/) — food & beverage sustainability scores  
+- [EWG Skin Deep](https://www.ewg.org/skindeep/) — ingredient health hazard ratings  
+- [EPA Safer Choice Database](https://www.epa.gov/saferchoice/products) — verified low-toxicity cleaning products  
+All data is used for educational and transparency purposes under open data licenses.
+""")
 
-# --------------------------
-# Sidebar selection
-# --------------------------
-st.sidebar.header("🔍 Product Selection")
-
-categories = sorted
