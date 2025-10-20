@@ -1,113 +1,160 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
+import plotly.express as px
 
-# --- Load Data ---
-@st.cache_data
-def load_data():
-    df = pd.read_csv("ecoscore_data_2023.csv")
-    return df
+# -------------------------------
+# PAGE CONFIG
+# -------------------------------
+st.set_page_config(page_title="EcoScore Dashboard", page_icon="🌿", layout="wide")
 
-df = load_data()
-
-# --- Title and Intro ---
-st.title("🌍 EcoScore Comparison Dashboard")
-st.markdown("""
-Compare **price**, **eco-score**, and **carbon intensity** across consumer products.  
-Use the dropdowns below to explore categories and items.
-""")
-
-# --- Category and Product Selection ---
-categories = sorted(df["Category"].unique())
-selected_category = st.selectbox("Select Product Category", categories)
-
-products = df[df["Category"] == selected_category]["Product"].unique()
-selected_products = st.multiselect(
-    "Select Products to Compare", 
-    products, 
-    default=[products[0]] if len(products) > 0 else None
+st.markdown(
+    """
+    <h1 style='text-align:center; color:#2E8B57;'>🌿 EcoScore Dashboard</h1>
+    <p style='text-align:center;'>Compare sustainability, pricing, and carbon impact across consumer products.</p>
+    """,
+    unsafe_allow_html=True
 )
 
-# --- Filter data ---
-filtered_df = df[df["Product"].isin(selected_products)]
+# -------------------------------
+# LOAD DATA
+# -------------------------------
+@st.cache_data
+def load_data():
+    df = pd.read_csv("ecoscore_data_extended_v2.csv")
+    df.columns = df.columns.str.strip()
+    return df
 
-if not filtered_df.empty:
-    st.subheader(f"📊 Comparison in {selected_category}")
+try:
+    df = load_data()
+except FileNotFoundError:
+    st.error("❌ Could not find ecoscore_data_extended_v2.csv. Please upload or place it in the app folder.")
+    st.stop()
 
-    # --- Quick Insights ---
-    avg_price = filtered_df["Price_USD"].mean()
-    avg_eco = filtered_df["EcoScore"].mean()
-    avg_carbon = filtered_df["Carbon_Intensity_gCO2eq"].mean()
+# -------------------------------
+# VERIFY KEY COLUMNS
+# -------------------------------
+required_cols = ["Product", "Category", "Price_USD", "EcoScore", "Carbon_Intensity_gCO2e"]
+missing = [col for col in required_cols if col not in df.columns]
+if missing:
+    st.error(f"Missing required columns: {missing}")
+    st.stop()
 
-    st.markdown(f"""
-    ### ⚡ Quick Insights (Selected Products)
-    - **Average Price:** ${avg_price:,.2f}
-    - **Average EcoScore:** {avg_eco:.1f} / 100  
-    - **Average Carbon Intensity:** {avg_carbon:.1f} gCO₂e
-    """)
-    st.markdown("---")
+# -------------------------------
+# CATEGORY AND PRODUCT SELECTION
+# -------------------------------
+categories = sorted(df["Category"].dropna().unique())
+selected_category = st.selectbox("Select Product Category", categories)
 
-    # --- Display Table ---
-    st.subheader("🧴 Product Details")
-    st.dataframe(
-        filtered_df[
-            ["Product", "Brand", "Price_USD", "EcoScore", "Carbon_Intensity_gCO2eq", "Main_Ingredients", "Packaging_Type"]
-        ],
-        use_container_width=True,
-    )
+product_list = df[df["Category"] == selected_category]["Product"].dropna().unique()
+selected_products = st.multiselect(
+    "Select Products to Compare",
+    product_list,
+    default=product_list[:2] if len(product_list) > 1 else product_list
+)
 
-    # --- Chart: Price vs EcoScore ---
-    st.subheader("💵 Price vs ♻️ EcoScore")
-    chart = (
-        alt.Chart(filtered_df)
-        .mark_circle(size=100)
-        .encode(
-            x="Price_USD",
-            y="EcoScore",
-            color="Product",
-            tooltip=["Product", "Price_USD", "EcoScore", "Carbon_Intensity_gCO2eq"]
-        )
-        .interactive()
-    )
-    st.altair_chart(chart, use_container_width=True)
+df_selected = df[df["Product"].isin(selected_products)]
 
-    # --- Chart: EcoScore vs Carbon Intensity ---
-    st.subheader("🌱 EcoScore vs 🏭 Carbon Intensity")
-    chart2 = (
-        alt.Chart(filtered_df)
-        .mark_circle(size=100)
-        .encode(
-            x="EcoScore",
-            y="Carbon_Intensity_gCO2eq",
-            color="Product",
-            tooltip=["Product", "EcoScore", "Carbon_Intensity_gCO2eq"]
-        )
-        .interactive()
-    )
-    st.altair_chart(chart2, use_container_width=True)
+if df_selected.empty:
+    st.warning("Please select one or more products to compare.")
+    st.stop()
 
-    # --- Scoring Methodology Section ---
-    with st.expander("📘 How EcoScore is Measured"):
-        st.markdown("""
-        **EcoScore (0–100)** combines environmental impact factors into a single number.  
-        The model used here is a simplified prototype:
+# -------------------------------
+# QUICK INSIGHTS SECTION
+# -------------------------------
+st.markdown("### ⚡ Quick Insights (Selected Products)")
+avg_price = df_selected["Price_USD"].mean()
+avg_ecoscore = df_selected["EcoScore"].mean()
+avg_carbon = df_selected["Carbon_Intensity_gCO2e"].mean()
 
-        | Component | Weight | Description |
-        |------------|---------|-------------|
-        | ♻️ **Ingredient safety & biodegradability** | 40% | Based on non-toxic, renewable ingredients |
-        | 🌍 **Carbon intensity** | 30% | Lifecycle CO₂e emissions per product |
-        | 📦 **Packaging sustainability** | 20% | Material type and recyclability |
-        | 💰 **Affordability / Price efficiency** | 10% | Normalized cost vs category baseline |
+col1, col2, col3 = st.columns(3)
+col1.metric("Average Price", f"${avg_price:,.2f}")
+col2.metric("Average EcoScore", f"{avg_ecoscore:.1f} / 100")
+col3.metric("Average Carbon Intensity", f"{avg_carbon:.1f} gCO₂e")
 
-        👉 *This is an illustrative scoring system using baseline 2023 data.  
-        Future versions will integrate verified LCA data and supplier disclosures.*
-        """)
-
-else:
-    st.warning("Please select at least one product to view comparison.")
-
-# --- Footer ---
 st.markdown("---")
-st.markdown("🔗 *EcoScore Dashboard Prototype – 2023 Baseline Data*")
-st.caption("© 2025 EcoScore.AI — All rights reserved")
+
+# -------------------------------
+# COMPARISON SCATTER PLOTS
+# -------------------------------
+st.markdown("### 📈 Visual Comparison")
+
+tab1, tab2 = st.tabs(["EcoScore vs Carbon Intensity", "EcoScore vs Price"])
+
+with tab1:
+    fig1 = px.scatter(
+        df_selected,
+        x="Carbon_Intensity_gCO2e",
+        y="EcoScore",
+        color="Product",
+        size="EcoScore",
+        hover_data=["Product", "Category", "Price_USD", "Packaging", "Recyclability_Score", "Country"],
+        title="EcoScore vs Carbon Intensity (Sustainability vs Emissions)",
+    )
+    fig1.update_layout(template="plotly_white", height=500)
+    st.plotly_chart(fig1, use_container_width=True)
+
+with tab2:
+    fig2 = px.scatter(
+        df_selected,
+        x="Price_USD",
+        y="EcoScore",
+        color="Product",
+        size="EcoScore",
+        hover_data=["Product", "Category", "Price_USD", "Packaging", "Recyclability_Score", "Country"],
+        title="EcoScore vs Price (Sustainability vs Cost)",
+    )
+    fig2.update_layout(template="plotly_white", height=500)
+    st.plotly_chart(fig2, use_container_width=True)
+
+# -------------------------------
+# PRODUCT DETAILS TABLE
+# -------------------------------
+st.markdown("### 🧴 Selected Product Details")
+
+detail_cols = [
+    "Product",
+    "Category",
+    "Price_USD",
+    "EcoScore",
+    "Carbon_Intensity_gCO2e",
+    "Packaging",
+    "Recyclability_Score",
+    "Main_Ingredients",
+]
+available_cols = [c for c in detail_cols if c in df_selected.columns]
+
+st.dataframe(
+    df_selected[available_cols].style.format({
+        "Price_USD": "${:,.2f}",
+        "Carbon_Intensity_gCO2e": "{:.1f} gCO₂e",
+        "EcoScore": "{:.0f}"
+    }),
+    use_container_width=True
+)
+
+# -------------------------------
+# SCORING METHODOLOGY SECTION
+# -------------------------------
+st.markdown("---")
+with st.expander("📘 How EcoScore is Measured"):
+    st.markdown("""
+    **EcoScore (0–100)** combines multiple sustainability factors into a single index.  
+    The weights below show how each aspect contributes to the total score:
+
+    | Component | Weight | Description |
+    |------------|---------|-------------|
+    | 🌿 **Ingredient safety & biodegradability** | 40% | Based on toxicity and renewable source indicators |
+    | 🌍 **Carbon intensity (lifecycle CO₂e)** | 30% | Estimated cradle-to-grave emissions per unit |
+    | 📦 **Packaging sustainability & recyclability** | 20% | Material composition and end-of-life recyclability |
+    | 💰 **Affordability / Accessibility** | 10% | Price normalized to category baseline |
+
+    🧠 *This dashboard uses a synthetic dataset for demonstration.  
+    Future versions will integrate verified LCA, supplier, and ingredient databases.*
+    """)
+
+# -------------------------------
+# FOOTER
+# -------------------------------
+st.markdown("---")
+st.caption("© 2025 EcoScore.AI — Prototype version for sustainability analytics.")
 
