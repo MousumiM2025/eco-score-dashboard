@@ -1,3 +1,4 @@
+#--Code Works
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -73,6 +74,7 @@ else:
 # --- Footer ---
 st.markdown("---")
 st.markdown("🔗 *EcoScore Dashboard Prototype – 2023 Baseline Data*")
+
 
 
 
